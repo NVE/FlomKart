@@ -1,0 +1,446 @@
+"";"snumber";"name";"ff1";"ff2"
+"1";200001;"not enough data";NA;NA
+"2";200011;"NaersjO";0.0678820906337421;0.999174639236927
+"3";200013;"Nedre Sjodalsvatn";NA;NA
+"4";200028;"Aulestad";0.190332411198708;0.282387336908754
+"5";200032;"AtnasjO";0.855638529509724;0.810921009022395
+"6";200036;"not enough data";NA;NA
+"7";200061;"not enough data";NA;NA
+"8";200122;"Skarnes";0.509951288900968;0.813551475408002
+"9";200129;"DOlplass";0.384249721526975;0.954970893911676
+"10";200132;"LomnnesjO";NA;NA
+"11";200142;"Knappom";0.666621510511285;0.73858271072162
+"12";200145;"BaattstO";0.224371886896261;0.962614426780191
+"13";200235;"not enough data";NA;NA
+"14";200265;"Unsetaaa";NA;NA
+"15";200267;"Mistra bru";NA;NA
+"16";200268;"Akslen";0.761213594270025;0.811889745709361
+"17";200275;"Liavatn";NA;NA
+"18";200279;"Kraakfoss";NA;NA
+"19";200280;"Kringlerdal";NA;NA
+"20";200284;"Saelatunga";NA;NA
+"21";200290;"Brustuen";NA;NA
+"22";200291;"Tora";NA;NA
+"23";200323;"Fura";NA;NA
+"24";200331;"not enough data";NA;NA
+"25";200415;"not enough data";NA;NA
+"26";200439;"Kvarstadseter";NA;NA
+"27";200451;"not enough data";NA;NA
+"28";200457;"not enough data";NA;NA
+"29";200463;"not enough data";NA;NA
+"30";200464;"not enough data";NA;NA
+"31";200465;"not enough data";NA;NA
+"32";200479;"not enough data";NA;NA
+"33";200578;"not enough data";NA;NA
+"34";200590;"not enough data";NA;NA
+"35";200592;"not enough data";NA;NA
+"36";200595;"not enough data";NA;NA
+"37";200604;"Elverum";0.754921888063657;0.943936906594993
+"38";200607;"VaalaasjO";NA;NA
+"39";200614;"Rosten";0.785468677328053;0.520855625659282
+"40";200616;"Kuggerud";NA;NA
+"41";200633;"Stortorp";NA;NA
+"42";200634;"not enough data";NA;NA
+"43";201036;"not enough data";NA;NA
+"44";300022;"HOgfoss";NA;NA
+"45";600010;"Gryta";NA;NA
+"46";800002;"BjOrnegaardssvingen";NA;NA
+"47";800006;"Saeternbekken";NA;NA
+"48";1100004;"Elgtjern";NA;NA
+"49";1100005;"not enough data";NA;NA
+"50";1100006;"not enough data";NA;NA
+"51";1200008;"not enough data";NA;NA
+"52";1200013;"Rysna";NA;NA
+"53";1200070;"Etna";0.455047751761905;0.986766326791656
+"54";1200097;"Bergheim";0.217479275748956;0.716192090002676
+"55";1200099;"Skaalfoss";NA;NA
+"56";1200113;"Kraakefjord ndf.";NA;NA
+"57";1200114;"Garhammerfoss";NA;NA
+"58";1200137;"Gjerdeslaatta";0.0155747632205294;0.994688928626324
+"59";1200150;"Buvatn";NA;NA
+"60";1200171;"HOlervatn";NA;NA
+"61";1200178;"Eggedal";NA;NA
+"62";1200188;"Langtjernbekk";NA;NA
+"63";1200193;"Fiskum";NA;NA
+"64";1200197;"Grunke";NA;NA
+"65";1200200;"KolbjOrnshus";NA;NA
+"66";1200207;"Vinde-elv";NA;NA
+"67";1200209;"not enough data";NA;NA
+"68";1200212;"not enough data";NA;NA
+"69";1200215;"not enough data";NA;NA
+"70";1200286;"Jaren ndf.";0.194886567011129;0.922791024392718
+"71";1500021;"Jondalselv";0.0290159508088825;0.990030840345401
+"72";1500049;"Jalledalsvatn";NA;NA
+"73";1500053;"Borgaai";NA;NA
+"74";1500079;"Orsjoren";NA;NA
+"75";1500174;"not enough data";NA;NA
+"76";1600010;"Omnesfoss";NA;NA
+"77";1600051;"Hagadrag";0.927366143164141;0.198222202531065
+"78";1600066;"Grosettjern";0.0301728850215696;0.9989319580896
+"79";1600075;"Tannsvatn (Lognvikvatnet)";NA;NA
+"80";1600122;"Grovaai";NA;NA
+"81";1600127;"not enough data";NA;NA
+"82";1600132;"Gjuvaa";NA;NA
+"83";1600140;"not enough data";NA;NA
+"84";1600189;"not enough data";NA;NA
+"85";1600193;"HOrte";NA;NA
+"86";1600194;"Kilen";NA;NA
+"87";1800004;"not enough data";NA;NA
+"88";1800010;"Gjerstad";NA;NA
+"89";1800011;"Tjellingtjernbekk";NA;NA
+"90";1900063;"not enough data";NA;NA
+"91";1900073;"Kilaai bru";NA;NA
+"92";1900078;"not enough data";NA;NA
+"93";1900079;"Gravaa";NA;NA
+"94";1900080;"Stigvassaai";NA;NA
+"95";1900082;"Rauaana";NA;NA
+"96";1900096;"Storgama ovf.";NA;NA
+"97";1900104;"Sognedalsaai";NA;NA
+"98";1900107;"not enough data";NA;NA
+"99";2000002;"Austenaa";0.823665987810421;0.0354060264006123
+"100";2000003;"Flaksvatn";0.843320402146396;0.1564920997422
+"101";2000011;"Tveitdalen";NA;NA
+"102";2200004;"KjOlemo";0.167978315813383;0.245423968662929
+"103";2200016;"Myglevatn ndf.";0.920240953648502;0.438342681675804
+"104";2200020;"Haaverstad";NA;NA
+"105";2200022;"SOgne";NA;NA
+"106";2400008;"MOska (Skolandsvatnet)";NA;NA
+"107";2400009;"Tingvatn (Lygne)";0.00292330492496062;0.999995571710649
+"108";2500007;"Refsti";0.831298265843612;0.857084364548713
+"109";2500030;"Stegemoen";NA;NA
+"110";2600005;"Dorgefoss";NA;NA
+"111";2600020;"aardal";NA;NA
+"112";2600021;"Sandvatn";NA;NA
+"113";2600026;"Jogla";NA;NA
+"114";2600029;"Refsvatn";NA;NA
+"115";2600064;"not enough data";NA;NA
+"116";2700015;"not enough data";NA;NA
+"117";2700016;"not enough data";NA;NA
+"118";2700024;"Helleland";NA;NA
+"119";2700025;"not enough data";NA;NA
+"120";2700042;"not enough data";NA;NA
+"121";2800007;"Haugland";0.392570941627137;0.973384733510273
+"122";NA;"NO DATA";NA;NA
+"123";NA;"NO DATA";NA;NA
+"124";2900007;"not enough data";NA;NA
+"125";3200006;"Liarvatn ndf.";0.802520381829037;0.210996972137307
+"126";3300010;"not enough data";NA;NA
+"127";3500002;"Hauge bru";0.955553774274595;0.290155668789096
+"128";3500009;"Osali (Botnavatnet)";NA;NA
+"129";3500016;"not enough data";NA;NA
+"130";3600011;"Straapa";0.612126844158937;0.386537671959968
+"131";3600013;"Grimsvatn";NA;NA
+"132";3600032;"not enough data";NA;NA
+"133";3600034;"not enough data";NA;NA
+"134";3700027;"not enough data";NA;NA
+"135";3800001;"Holmen";NA;NA
+"136";3900001;"Tysvaer";NA;NA
+"137";3900002;"not enough data";NA;NA
+"138";4100001;"Stordalsvatn";0.999908380189677;0.208537936962617
+"139";4200002;"Fjellhaugvatn";NA;NA
+"140";4200016;"not enough data";NA;NA
+"141";4600004;"Bondhus";NA;NA
+"142";4600009;"FOnnerdalsvatn";NA;NA
+"143";4800001;"Sandvenvatn";0.915943679591436;0.516458842822828
+"144";4800005;"Reinsnosvatn";0.279545906176594;0.844390989306434
+"145";5000001;"HOlen";0.155267368797962;0.999999952889451
+"146";5000003;"Eidfjordvatn";0.509553329708372;0.336432117760334
+"147";5500004;"ROykenes";0.350089073613741;0.999645092852274
+"148";5500005;"Dyrdalsvatn";NA;NA
+"149";5500007;"Eikelandsosen";NA;NA
+"150";6100008;"not enough data";NA;NA
+"151";6100013;"not enough data";NA;NA
+"152";6200005;"Bulken (Vangsvatnet)";0.968300721175825;0.572407183725518
+"153";6200010;"not enough data";NA;NA
+"154";6200014;"Slondalsvatn";NA;NA
+"155";6200015;"Kinne";NA;NA
+"156";6200018;"not enough data";NA;NA
+"157";6300012;"not enough data";NA;NA
+"158";6400006;"not enough data";NA;NA
+"159";6800002;"Havelandselv";NA;NA
+"160";7000007;"not enough data";NA;NA
+"161";7000008;"not enough data";NA;NA
+"162";7100001;"Skjerping";NA;NA
+"163";7200005;"Brekke bru";0.479396916918942;0.965623202808617
+"164";7200007;"Vassbygdvatn";0.254121727431096;0.92264552086907
+"165";7300001;"Lo bru";0.106827409898069;0.676742446071593
+"166";7300004;"Saelthun";NA;NA
+"167";7300021;"Frostdalen";NA;NA
+"168";7300027;"Sula";NA;NA
+"169";7400001;"aardalsvatn";0.089218649988017;0.736390768666439
+"170";7400018;"not enough data";NA;NA
+"171";7500022;"Gilja";NA;NA
+"172";7500023;"Krokenelv";NA;NA
+"173";7500028;"Feigumfoss";NA;NA
+"174";7600005;"Nigardsbrevatn(NigardsjOen)";NA;NA
+"175";7600010;"Myklemyr";NA;NA
+"176";7600011;"VigdOla";NA;NA
+"177";7600014;"not enough data";NA;NA
+"178";7600015;"not enough data";NA;NA
+"179";7700003;"Sogndalsvatn";NA;NA
+"180";7700020;"not enough data";NA;NA
+"181";7800008;"BOyumselv";NA;NA
+"182";7900003;"Nessedalselv";NA;NA
+"183";8000004;"UllebOelv";0.87289379356491;0.893108594562708
+"184";8100001;"Hersvikvatn (Hagevatnet)";0.290550164681859;0.860672586461507
+"185";8200004;"Nautsundvatn";0.643557615736464;0.742294115883677
+"186";8300002;"Viksvatn (Hestadfjorden)";0.613977512275167;0.250008798547477
+"187";8300006;"Byttevatn";NA;NA
+"188";8300007;"GrOnengstOlsvatn";NA;NA
+"189";8300012;"Haukedalsvatn ndf.";NA;NA
+"190";8400015;"JOlstervatn ndf.";0.850014029634265;0.145130694942024
+"191";8400019;"not enough data";NA;NA
+"192";8400020;"Holsenvatn";NA;NA
+"193";8400030;"not enough data";NA;NA
+"194";8500002;"Blaamannsvatn";0.350168253056509;0.921895234515319
+"195";8500004;"Straumstad (Solhiemsvatnet)";NA;NA
+"196";8600001;"Risevatn";NA;NA
+"197";8600010;"aavatn (Ommedalsvatnet)";NA;NA
+"198";8600012;"Skjerdalselv";NA;NA
+"199";8700002;"Gloppenelva v/Eidsfoss";0.465630867161785;0.534274175399244
+"200";8700010;"Gloppenelv v/Bergheim";NA;NA
+"201";8800004;"Lovatn";0.81919051567045;0.216430019291573
+"202";8800011;"not enough data";NA;NA
+"203";8800015;"not enough data";NA;NA
+"204";8800030;"not enough data";NA;NA
+"205";8900001;"Horindalsvatn";0.138960261434189;0.986562906879225
+"206";9000001;"not enough data";NA;NA
+"207";9100002;"DalsbOvatn";0.180961911901217;0.806537119127557
+"208";9600003;"not enough data";NA;NA
+"209";9700001;"Fetvatn (Fitjavatnet)";0.822325613447527;0.39880131601273
+"210";9700005;"not enough data";NA;NA
+"211";9800004;"Oye ndf.";0.714288945868989;0.773499761203034
+"212";NA;"NO DATA";NA;NA
+"213";10000001;"ValldOla v/Alstad";NA;NA
+"214";10100001;"Engsetvatn";0.983522705451738;0.59182924567171
+"215";10200001;"not enough data";NA;NA
+"216";10300003;"Rauma v/Stuguflaaten";NA;NA
+"217";10300020;"Isa v/MorstOl bru";NA;NA
+"218";10300040;"Rauma v/Horgheim";NA;NA
+"219";10400001;"Lille Eikesdalsvatn";NA;NA
+"220";10400022;"Midtre Mardalsvatn";NA;NA
+"221";10400023;"Vistdal ";NA;NA
+"222";10500001;"Osenelv v/Oren";0.673827469598109;0.543736103616933
+"223";10700003;"Farstadelva v/Farstad";NA;NA
+"224";10900009;"Driva v/Risefoss";0.965992570893566;0.462427422368761
+"225";10900020;"Driva v/GrensehOlen";NA;NA
+"226";10900021;"Driva v/Svon";NA;NA
+"227";10900029;"Dalavatn";NA;NA
+"228";10900035;"not enough data";NA;NA
+"229";10900042;"Driva v/Elverhoy bru";NA;NA
+"230";11000001;"not enough data";NA;NA
+"231";11000002;"Draget";NA;NA
+"232";11100005;"Toaaa v/Talgoyfoss";0.999998603718753;0.00454645839950977
+"233";11100009;"SOya v/Melhus";NA;NA
+"234";11100010;"Naustaaa";NA;NA
+"235";11400001;"not enough data";NA;NA
+"236";12100020;"not enough data";NA;NA
+"237";12100022;"Syrstad";NA;NA
+"238";12200009;"Gaulfoss";NA;NA
+"239";12200017;"Hugdal bru";NA;NA
+"240";12300029;"not enough data";NA;NA
+"241";12300031;"Kjeldstad i Garbergelva";0.0313180903551346;0.978368386689822
+"242";12400002;"HOggaas bru";0.756204191940457;0.651578386195013
+"243";12400015;"not enough data";NA;NA
+"244";12500002;"Fossing";1;1.28868785200489e-05
+"245";12600002;"not enough data";NA;NA
+"246";12700006;"Grunnfoss";0.783888960369189;0.992018823853903
+"247";12700011;"Veravatn";NA;NA
+"248";12700013;"Dillfoss";NA;NA
+"249";12800009;"Leksdalsvatn";NA;NA
+"250";13100001;"Oppgrande bru";NA;NA
+"251";13300007;"Krinsvatn (Kringsvatnet)";0.378201898451939;0.999878040655128
+"252";13800001;"Oyungen";0.202593943376166;0.99967458038907
+"253";13900013;"not enough data";NA;NA
+"254";13900015;"BjOrnstad";0.148403663448057;0.207324355770117
+"255";13900020;"Moen";NA;NA
+"256";13900035;"Trangen";NA;NA
+"257";14000002;"Salsvatn";0.758520192544365;0.808010573188212
+"258";14200001;"FOrste Aunvatn";NA;NA
+"259";14400001;"aabjOrvatn";0.336592020002376;0.883019416375801
+"260";14400006;"Saglivatn";NA;NA
+"261";14800001;"Strompdal";NA;NA
+"262";14800002;"Mevatnet";NA;NA
+"263";15000001;"SOrra";NA;NA
+"264";15000003;"not enough data";NA;NA
+"265";15100003;"Hundaalvatn";NA;NA
+"266";15100004;"not enough data";NA;NA
+"267";15100006;"not enough data";NA;NA
+"268";15100007;"Kapskarmo";0.120519368914713;0.990199259869626
+"269";15100009;"Unkervatn";NA;0.349755335690126
+"270";15100012;"not enough data";NA;NA
+"271";15100015;"Nervoll";NA;NA
+"272";15100016;"not enough data";NA;NA
+"273";15100017;"not enough data";NA;NA
+"274";15100020;"not enough data";NA;NA
+"275";15100021;"Joibakken";NA;NA
+"276";15100028;"Laksfors";0.988407240495934;0.750609475058048
+"277";15100065;"not enough data";NA;NA
+"278";15200004;"Fustvatn";0.0219012401905222;0.86745668656422
+"279";15300001;"Storvatn";0.322642355930108;0.634740933008905
+"280";15500002;"Tustervatn";NA;NA
+"281";15500005;"Lille Maalvatn";NA;NA
+"282";15500006;"SjOfoss";NA;NA
+"283";15500007;"not enough data";NA;NA
+"284";15500011;"not enough data";NA;NA
+"285";15500013;"not enough data";NA;NA
+"286";15500027;"not enough data";NA;NA
+"287";15600003;"not enough data";NA;NA
+"288";15600004;"Nevernes";0.824998176056327;NA
+"289";15600005;"not enough data";NA;NA
+"290";15600007;"Jordbru";NA;NA
+"291";15600008;"Svartisdal";0.24920811399611;0.997856222228248
+"292";15600009;"Krokstrand";NA;NA
+"293";15600010;"Berget";0.235711004117189;0.957098843283493
+"294";15600013;"BjOrnfoss";NA;0.298343003050518
+"295";15600015;"Forsbakk";NA;NA
+"296";15600017;"Virvatn";NA;NA
+"297";15600018;"not enough data";NA;NA
+"298";15600020;"not enough data";NA;NA
+"299";15600021;"Lille Umvatn";NA;NA
+"300";15600022;"not enough data";NA;NA
+"301";15600023;"not enough data";NA;NA
+"302";15600024;"Bogvatn";NA;NA
+"303";15600027;"Leiraaga";NA;NA
+"304";15600034;"not enough data";NA;NA
+"305";15700003;"Vassvatn";0.913427136595472;0.578404424498716
+"306";15900003;"Engabrevatn";NA;NA
+"307";15900004;"not enough data";NA;NA
+"308";15900005;"StrOmdalen";NA;NA
+"309";NA;"NO DATA";NA;NA
+"310";16000002;"not enough data";NA;NA
+"311";16100001;"aagnes";NA;NA
+"312";16100003;"aarstadfossen";NA;NA
+"313";16100006;"not enough data";NA;NA
+"314";16100007;"Tollaaga";NA;NA
+"315";16100009;"not enough data";NA;NA
+"316";16100018;"not enough data";NA;NA
+"317";16200001;"Oldereidvatn";NA;NA
+"318";16200003;"Skarsvatn";0.994603030168747;0.0358164406870889
+"319";16300002;"not enough data";NA;NA
+"320";16300005;"Junkerdalselv";0.650119792368724;0.452940465386964
+"321";16300006;"Jordbrufjell";0.186009979044907;0.979976114097989
+"322";16300007;"Kjemaavatn";NA;NA
+"323";16300008;"not enough data";NA;NA
+"324";16300009;"not enough data";NA;NA
+"325";16300010;"not enough data";NA;NA
+"326";16300018;"not enough data";NA;NA
+"327";NA;"NO DATA";NA;NA
+"328";16600001;"Lakshola";0.199095687580032;0.830950160119796
+"329";16600003;"not enough data";NA;NA
+"330";16600013;"Vallvatn";NA;NA
+"331";16700002;"SOrfjordvatn";0.965526736553904;0.494047205597649
+"332";16700003;"kobbvatn";0.998554886038039;0.00545364044915296
+"333";16700004;"not enough data";NA;NA
+"334";16800001;"Storvatn";0.60609259650826;0.10417850775806
+"335";16800002;"not enough data";NA;NA
+"336";16800003;"Laksaa bru";0.819724273839323;0.911369549247405
+"337";17000001;"not enough data";NA;NA
+"338";17000005;"not enough data";NA;NA
+"339";17100002;"not enough data";NA;NA
+"340";17100003;"not enough data";NA;NA
+"341";17100004;"not enough data";NA;NA
+"342";17100005;"not enough data";NA;NA
+"343";17100007;"not enough data";NA;NA
+"344";17200007;"Leirpoldvatn";NA;NA
+"345";17200008;"Rauvatn";NA;NA
+"346";17300001;"not enough data";NA;NA
+"347";17300003;"SOrelv";NA;NA
+"348";17300008;"Coarveij";NA;NA
+"349";17300022;"Gamnes";0.999999999989625;0.103312340608184
+"350";17400001;"not enough data";NA;NA
+"351";17400003;"Ovstevatn (Litlevatnet)";NA;NA
+"352";17400008;"Sildvikvatn";NA;NA
+"353";17400009;"not enough data";NA;NA
+"354";17400011;"not enough data";NA;NA
+"355";17600001;"not enough data";NA;NA
+"356";17700004;"Sneisvatn";0.768178835849207;0.780653432302858
+"357";17800001;"Langvatn";1;1.77554325937112e-05
+"358";17900006;"not enough data";NA;NA
+"359";18000001;"not enough data";NA;NA
+"360";18100001;"not enough data";NA;NA
+"361";18500001;"Gaaslandsvatn";0.327447354093864;0.883205185672102
+"362";18600002;"not enough data";NA;NA
+"363";18900001;"not enough data";NA;NA
+"364";18900002;"not enough data";NA;NA
+"365";18900003;"Tennevikvatn";NA;NA
+"366";19000001;"not enough data";NA;NA
+"367";19000002;"not enough data";NA;NA
+"368";19100002;"not enough data";NA;NA
+"369";19300002;"not enough data";NA;NA
+"370";19400001;"Lysetvatn";0.760973601453351;0.50477033910327
+"371";19400004;"Mevatn";0.414231047642942;0.859045991442561
+"372";19600005;"Insetvatn";NA;NA
+"373";19600007;"Ytre FiskelOsvatn";NA;NA
+"374";19600011;"Lille Rostavatn";NA;NA
+"375";19600012;"Lundberg";NA;NA
+"376";19600013;"not enough data";NA;NA
+"377";19600035;"Malangsfoss";0.168280921107149;0.420128290503117
+"378";19700004;"not enough data";NA;NA
+"379";19700010;"not enough data";NA;NA
+"380";20000004;"not enough data";NA;NA
+"381";20300002;"not enough data";NA;NA
+"382";20400001;"Solli";NA;NA
+"383";20400006;"Kavlefoss";0.225611616673701;0.997885238677623
+"384";20500001;"Helligskogen";NA;NA
+"385";20500002;"not enough data";NA;NA
+"386";20500003;"Skibotn bru";NA;NA
+"387";20500008;"Helligskogen";NA;NA
+"388";20600002;"not enough data";NA;NA
+"389";20600003;"Manndalen bru";NA;NA
+"390";20700001;"Fagertun";NA;NA
+"391";20800001;"not enough data";NA;NA
+"392";20800002;"Oksfjordvatn";NA;NA
+"393";20800003;"Svartfossberget";NA;NA
+"394";20900001;"Njemenjaikafoss";NA;NA
+"395";20900002;"not enough data";NA;NA
+"396";20900003;"not enough data";NA;NA
+"397";20900004;"Lillefossen";NA;NA
+"398";21000001;"Ovrefoss";NA;NA
+"399";21200002;"Stengelsen";NA;NA
+"400";21200003;"Jotkajavrre";NA;NA
+"401";21200007;"Lille Mattisvatn";NA;NA
+"402";21200010;"Masi";NA;NA
+"403";21200011;"Kista";NA;NA
+"404";21200013;"not enough data";NA;NA
+"405";21200026;"not enough data";NA;NA
+"406";21200027;"not enough data";NA;NA
+"407";21200048;"not enough data";NA;NA
+"408";21200049;"Halsnes";NA;NA
+"409";21300002;"Leribotnvatn";NA;NA
+"410";21300003;"not enough data";NA;NA
+"411";21300004;"Kvalsund";NA;NA
+"412";22000001;"not enough data";NA;NA
+"413";22200002;"not enough data";NA;NA
+"414";22300001;"Stabburselv";0.365272697714778;0.631668777330692
+"415";22400001;"Skoganvarre";0.914946108183099;0.249802149568788
+"416";22500001;"not enough data";NA;NA
+"417";22800002;"not enough data";NA;NA
+"418";22900001;"not enough data";NA;NA
+"419";22900002;"not enough data";NA;NA
+"420";23100001;"not enough data";NA;NA
+"421";23400002;"not enough data";NA;NA
+"422";23400004;"not enough data";NA;NA
+"423";23400005;"not enough data";NA;NA
+"424";23400013;"not enough data";NA;NA
+"425";23400014;"not enough data";NA;NA
+"426";23400016;"not enough data";NA;NA
+"427";23400018;"not enough data";NA;NA
+"428";23700001;"Baatsfjord";NA;NA
+"429";23700002;"not enough data";NA;NA
+"430";24100001;"Bergeby";NA;NA
+"431";24200001;"not enough data";NA;NA
+"432";24400002;"Neiden";0.75323398458521;0.401283508593785
+"433";24400005;"not enough data";NA;NA
+"434";24600001;"not enough data";NA;NA
+"435";24600004;"not enough data";NA;NA
+"436";24600008;"not enough data";NA;NA
+"437";24600009;"Sametielv";NA;NA
+"438";30300005;"not enough data";NA;NA
+"439";30700005;"MurusjO";0.90140776680718;0.434060345176118
+"440";30700007;"Landbru";0.546516352832482;0.980966263694281
+"441";30700014;"not enough data";NA;NA
+"442";30800001;"Lenglingen";0.185111606867631;0.995707623701641
+"443";31100004;"Femundsenden (Femunden)";0.340264269359387;0.909643766540948
+"444";31100006;"Nybergsund";0.99526543130796;0.193939211442421
+"445";31100460;"Engeren";0.0851947865224252;0.998194296120606
