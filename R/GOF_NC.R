@@ -253,11 +253,17 @@ for (st in seq(along = station.nb.vect)) {
             
             if (length(param.sample.estimate[1:3, j, rr]) > 1) {
             temp.random.rlevels[rr, 1:dim.r_periods] <- RLEVELS4NC(param.sample.estimate[1:3, j, rr], return.periods, distr = distr)
-            if (!all(is.na(temp.random.rlevels[rr, ]))) {
-            temp.random.QS[rr, 1:dim.r_periods] <- QS4NC(sample.q, temp.random.rlevels[rr, 1:dim.r_periods], return.periods)
-            temp.random.BS[rr, 1:dim.r_periods] <- BS4NC(sample.q, thresholds, param.sample.estimate[1:3, j, rr], distr = distr)
-            # temp.random.NT[rr, 1:dim.r_periods] <- gof_nt(sample.q, rperiods.bs, param.sample.estimate[1:3, j, rr], distr = distr)  # TOCHECK  , param.sample.estimate[1:3, j, rr], distr = distr
             
+            # modified by KOE			
+			temp.random.rlevels.qs <- RLEVELS4NC(param.sample.estimate[1:3, j, rr], rperiods.bs, distr = distr)
+#####################################################################################################
+            if (!all(is.na(temp.random.rlevels[rr, ]))) {
+# modified by KOE			
+            temp.random.QS[rr, 1:dim.r_periods] <- QS4NC(temp.Q, temp.random.rlevels.qs, rperiods.bs)			
+#            temp.random.QS[rr, 1:dim.r_periods] <- QS4NC(sample.q, temp.random.rlevels[rr, 1:dim.r_periods], return.periods)
+#########################################################################
+            temp.random.BS[rr, 1:dim.r_periods] <- BS4NC(temp.Q, thresholds, param.sample.estimate[1:3, j, rr], distr = distr)
+#########################################################################################################  
             
             }
             temp.random.CS[rr] <- gof_cs(temp.Q, param.sample.estimate[1:3, j, rr], as.character(distr))  # I think it makes sense this way, but
