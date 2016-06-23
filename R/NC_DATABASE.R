@@ -28,19 +28,55 @@ rm(list = ls())  # clean out workspace and set working directory
 
 # Load libraries
 library(RNetCDF)      # To work with NetCDF files
-library('fitdistrib') # My own package for fitting distributions
+library(fitdistrib) # My own package for fitting distributions
+library(lubridate)
 
 # Source all the required R files
 source('LOAD.r')      # Required to load Q into database and save station coordinates
 
 
 ## To run at every update --------------
-temp <- read.delim("../data/AMS_table_HYDRA_endelig.txt", sep="\t", as.is=TRUE)  # CHECK DIR
+raw_dat <- read.delim("../data/AMS_table_HYDRA_endelig.txt", sep="\t", as.is=TRUE)  # CHECK DIR
+raw_dat$year <- year(raw_dat$dt_flood_daily_date)
+raw_dat$snumber <- raw_dat$regine_area * 10^5 + raw_dat$main_nr
 
-dat <- read.csv("../data/AMS_table_updated.csv", sep=";", as.is=TRUE)  # CHECK DIR
-dat$flom_DOGN <- temp$value_q_daily
-dat$flom_DOGN <- as.numeric(dat$flom_DOGN)
+# Old data for station names only
+old_dat <- read.csv("../data/AMS_table_old.csv", sep=";", as.is=TRUE)  # CHECK DIR
 
+for (i in 1:length(raw_dat$year)) {
+  if (length(which(old_dat$snumber == raw_dat$snumber[i])) > 0) {
+  raw_dat$name[i] <- old_dat$name[which(old_dat$snumber == raw_dat$snumber[i])[1]]
+  } else {
+    raw_dat$name[i] <- "NO_NAME"
+  }
+}
+  
+# Get rid of the double flood values for 1 year (we take the max by setting the min to NA)
+for (i in 1:(length(raw_dat$year) - 1)) {
+  if (!is.na(raw_dat$year[i])) {
+    if (raw_dat$year[i] == raw_dat$year[i + 1] && any(is.na(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1]))) == FALSE ) {
+      min_index <- which(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1]) == min(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1])))
+      raw_dat$value_q_daily[i - 1 + min_index] <- NA
+    }
+  }
+}
+
+# Let's first get rid of any data line that has an NA flow and create the dat list
+dat <- list()
+keep <- which(!is.na(raw_dat$value_q_daily))
+
+dat$regine_area <- raw_dat$regine_area[keep]
+dat$main_nr <- raw_dat$main_nr[keep]
+dat$snumber <- raw_dat$snumber[keep]
+dat$name <- raw_dat$name[keep]
+
+dat$flom_DOGN <- raw_dat$value_q_daily[keep]
+dat$date <- raw_dat$dt_flood_daily_date[keep]
+dat$year <- raw_dat$year[keep]
+
+dat$fraction_rain <- raw_dat$fraction_rain[keep]
+
+# Making list of snumber and getting rid of stations with not enough data
 station.nb.vect.init <- na.omit(unique(dat$snumber))
 
 min_years_data <- 30  # set the minimum number of years to accept a station
@@ -48,6 +84,7 @@ station.nb.vect <- c()
 length_rec <- c()
 
 for (i in seq(along = station.nb.vect.init)) {
+  
   length_record <- length(which(dat$snumber == station.nb.vect.init[i]))
   if (length_record >= min_years_data) {
     station.nb.vect <- c(station.nb.vect, station.nb.vect.init[i])
@@ -56,6 +93,36 @@ for (i in seq(along = station.nb.vect.init)) {
   
 }
 
+# Read station coordinates
+utminfo <- read.table("../data/Coordinater for kart_for_R.txt",  
+                      sep = "\t", header = T)  # CHECK DIR
+dat <- save_coordinates(dat, station.nb.vect)  # this function is in LOAD.R
+
+# Read catchments area
+catchment.prop <- read.csv("../data/Hydra_FeltparTabell.csv", sep=";")  # CHECK DIR  
+catchment.prop$COMPOUND_K <- catchment.prop$COMPOUND_K / 1000  # to get the same numbers as in the main data file
+catchment.size <- rep("NA", length(station.nb.vect))
+catchment.min.height <- rep("NA", length(station.nb.vect))
+catchment.max.height <- rep("NA", length(station.nb.vect))
+
+indexes.in.catchmentprop  <- rep("NA", length(station.nb.vect))
+
+for (i in seq(along = station.nb.vect)) {
+if (is.numeric(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))) {
+  if (as.numeric(length(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))) > 0) { 
+    indexes.in.catchmentprop[i] <- which(catchment.prop$COMPOUND_K == station.nb.vect[i])[1]  
+    # [1] because some snumbers occur twice in the Hydra_FeltparTabell.csv
+  }
+}
+}
+
+indexes.in.catchmentprop <- as.numeric(indexes.in.catchmentprop)
+
+catchment.size <- as.numeric(catchment.prop$AREAL_UTM3[as.numeric(indexes.in.catchmentprop)])
+catchment.min.height <- catchment.prop$HEIGHT_MIN[as.numeric(indexes.in.catchmentprop)]
+catchment.max.height <- catchment.prop$HEIGHT_MAX[as.numeric(indexes.in.catchmentprop)]
+
+################################################
 
 dim.station <- length(station.nb.vect)
 dim.distr <- 5
@@ -72,50 +139,41 @@ method.name <- c("mle", "Lmom", "mom", "bayes")
 
 ## To run if creating the nc file from scratch  --------------
 
-# Read station coordinates
-utminfo <- read.table("../data/Coordinater for kart_for_R.txt",  
-                      sep = "\t", header = T)  # CHECK DIR
-dat <- save_coordinates(dat, station.nb.vect)  # this function is in LOAD.R
-
-# Read catchments area
-catchment.prop <- read.csv("../data/Hydra_FeltparTabell.csv", sep=";")  # CHECK DIR  
-catchment.prop$COMPOUND_K <- catchment.prop$COMPOUND_K / 1000  # to get the same numbers as in the main data file
-catchment.size <- rep("NA", dim.station)
-catchment.min.height <- rep("NA", dim.station)
-catchment.max.height <- rep("NA", dim.station)
-
-indexes.in.catchmentprop  <- rep("NA", length(station.nb.vect))
-
-for (i in seq(along = station.nb.vect)) {
-  if (length(which(catchment.prop$COMPOUND_K == station.nb.vect[i])) != 0) { 
-    indexes.in.catchmentprop[i] <- which(catchment.prop$COMPOUND_K == station.nb.vect[i])
-    print(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))
-  }
-}
-
-catchment.size <- catchment.prop$AREAL_UTM3[as.numeric(indexes.in.catchmentprop)]
-catchment.min.height <- catchment.prop$HEIGHT_MIN[as.numeric(indexes.in.catchmentprop)]
-catchment.max.height <- catchment.prop$HEIGHT_MAX[as.numeric(indexes.in.catchmentprop)]
-
-
 # Creation of the CDF dataset and definition of the dimensions
 nc <- create.nc("../output/flood_database.nc")  # CHECK DIR
 att.put.nc(nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis results")
-att.put.nc(nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", date()))
+att.put.nc(nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
-Q <- array(NA,dim=c(dim.station, dim.length_total_record))
 station.name <- rep("NA", dim.station)
-station.nve_nb <- rep("NA", dim.station)
 station.utmN <- rep(-9999, dim.station)
 station.utmE <- rep(-9999, dim.station)
 station.long <- rep(-9999, dim.station)
 station.lat <- rep(-9999, dim.station)
 station.lat <- rep(-9999, dim.station)
-
 station.length_rec <- length_rec
 
 
-# catchment.size <- rep(-9999, dim.station)
+Q <- array(NA,dim=c(dim.station, dim.length_total_record))
+years <- array(NA,dim=c(dim.station, dim.length_total_record))
+dates <- array(NA,dim=c(dim.station, dim.length_total_record))
+
+# Loop over the stations to fill variables: Q, station.name
+for (i in seq(along = station.nb.vect)) {
+  
+  indexes <- which(dat$snumber == station.nb.vect[i])
+
+  # Matrices
+  Q[i, 1:length_rec[i]] <- dat$flom_DOGN[indexes]
+  years[i, 1:length_rec[i]] <- dat$year[indexes]
+  dates[i, 1:length_rec[i]] <- dat$date[indexes]
+  
+  # Vectors
+  station.name[i] <-  as.character(unique(dat$name[indexes]))
+  station.utmN[i] <- unique(dat$utmN[indexes])
+  station.utmE[i] <-  unique(dat$utmE[indexes])
+  station.long[i] <-  unique(dat$long[indexes])
+  station.lat[i] <-  unique(dat$lat[indexes])
+}
 
 random_indexes <- array(NA, dim = c(dim.station, dim.random_runs, length(sampling_years), dim.max_subsample))
 
@@ -139,6 +197,18 @@ att.put.nc(nc, "Q", "short_name", "NC_CHAR", "Flood record")
 att.put.nc(nc, "Q", "long_name", "NC_CHAR", "Yearly flood records (averaged maximum daily flow in m3/s) for Norway")
 var.put.nc(nc, "Q", Q)
 
+var.def.nc(nc, varname = "years", vartype = "NC_INT", dimensions = c("station", "length_total_record"))
+att.put.nc(nc, "years", "missing_value", "NC_INT", -9999)
+att.put.nc(nc, "years", "short_name", "NC_CHAR", "Years of record")
+att.put.nc(nc, "years", "long_name", "NC_CHAR", "Years of record")
+var.put.nc(nc, "years", years)
+
+var.def.nc(nc, varname = "dates", vartype = "NC_CHAR", dimensions = c("station", "length_total_record"))
+att.put.nc(nc, "dates", "missing_value", "NC_CHAR", "NA")
+att.put.nc(nc, "dates", "short_name", "NC_CHAR", "Dates of record")
+att.put.nc(nc, "dates", "long_name", "NC_CHAR", "Dates of record")
+var.put.nc(nc, "dates", dates)
+
 var.def.nc(nc,  varname = "distr.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "distr"))
 att.put.nc(nc, "distr.name", "missing_value", "NC_CHAR", "NA")
 att.put.nc(nc, "distr.name", "long_name", "NC_CHAR", "Distributions used: gumbel, gamma, gev, gl, pearson")
@@ -152,11 +222,6 @@ var.put.nc(nc, "method.name", method.name)
 var.def.nc(nc,  varname = "station.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
 att.put.nc(nc, "station.name", "missing_value", "NC_CHAR", "NA")
 var.put.nc(nc, "station.name", station.name)
-
-# var.rename.nc(nc, "station.nve_nb",  "station.nve_nb_old5")
-var.def.nc(nc,  varname = "station.nve_nb", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
-att.put.nc(nc, "station.nve_nb", "missing_value", "NC_CHAR", "NA")
-var.put.nc(nc, "station.nve_nb", station.nve_nb)
 
 var.def.nc(nc,  varname = "station.utmN", vartype = "NC_INT", dimensions = "station")
 att.put.nc(nc, "station.utmN", "missing_value", "NC_INT", -9999)
@@ -240,24 +305,8 @@ sync.nc(nc)  # Save what we've done so far
 
 nc <- open.nc("../output/flood_database.nc", write = TRUE)  # Put FALSE for read-only  # CHECK DIR
 
-# Loop over the stations to fill variables: Q, station.name
-for (i in seq(along = station.nb.vect)) {
-
-  indexes <- which(dat$snumber == station.nb.vect[i])
-#   if (length(temp$flom_DOGN) > 0) {
-  Q[i, 1:length_rec[i]] <- dat$flom_DOGN[indexes]
-  station.name[i] <-  as.character(unique(dat$name[indexes]))
-  station.nve_nb[i] <- unique(dat$stn.nve[indexes])
-  station.utmN[i] <- unique(dat$utmN[indexes])
-  station.utmE[i] <-  unique(dat$utmE[indexes])
-  station.long[i] <-  unique(dat$long[indexes])
-  station.lat[i] <-  unique(dat$lat[indexes])
-  # }
-  
-}
 var.put.nc(nc, "Q", Q)
 var.put.nc(nc, "station.name", station.name)
-var.put.nc(nc, "station.nve_nb", station.nve_nb)
 var.put.nc(nc, "station.utmN", station.utmN)
 var.put.nc(nc, "station.utmE", station.utmE)
 var.put.nc(nc, "station.long", station.long)

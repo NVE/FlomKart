@@ -34,10 +34,10 @@ save_coordinates <- function(dat, station.nb.vect) {
   utminfo <- read.table("//nve/fil/h/HM/Interne Prosjekter/Flomkart/Model_fitting/Florian/Data/Coordinater for kart_for_R.txt",  sep = "\t", header = T)
   
 
-  dat$stn.nve <- paste(dat$regine_enhet, ".", dat$hovednr,sep="")
+  dat$stn.nve <- paste(dat$regine_area, ".", dat$main_nr,sep="")
   
   for (u in seq(along = dat$stn.nve)) {
-    loc.tmp <- which(utminfo$regine_area == dat$regine_enhet[u] & utminfo$main_no == dat$hovednr[u] ) 
+    loc.tmp <- which(utminfo$regine_area == dat$regine_area[u] & utminfo$main_no == dat$main_nr[u] ) 
     if(length(loc.tmp) == 0){
       dat$utmN[u] <- NA
       dat$utmE[u] <- NA
@@ -50,9 +50,9 @@ save_coordinates <- function(dat, station.nb.vect) {
       dat$latitude[u] <- utminfo$latitude[loc.tmp]
     }
   }
-#   # You can Write the new data table to a csv file
-#   write.table(dat, file = "georef_data.csv", sep = ";", 
-#               col.names = NA, qmethod = "double")
+  # You can Write the new data table to a csv file
+  write.table(dat, file = "georef_data.csv", sep = ";", 
+              col.names = NA, qmethod = "double")
   
   invisible(dat)
 }
