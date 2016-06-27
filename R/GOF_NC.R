@@ -17,7 +17,7 @@ library(nsRFA)        # invF.gumb()
 # library(ismev)        # An Introduction to Statistical Modeling of Extreme Values
 
 # Source all the required R files
-source('F4NC.r')      # Goodness of fit functions
+source('F4NC.R')      # Goodness of fit functions
 source('LOAD.r')
 
 ## To run at every update --------------
@@ -73,7 +73,21 @@ att.put.nc(gof_nc, "r.periods", "long_name", "NC_CHAR",
            "The following return periods were used: 10, 20, 50, 100, 200 and 500 years")
 var.put.nc(gof_nc, "r.periods", return.periods)
 
-# TO DO. ADD THE RETURN PERDIOS FOR BS
+var.def.nc(gof_nc, varname = "r.periods.qs", vartype = "NC_SHORT", 
+           dimensions = "r.periods")
+att.put.nc(gof_nc, "r.periods.qs", "missing_value", "NC_SHORT", -9999)
+att.put.nc(gof_nc, "r.periods.qs", "short_name", "NC_CHAR", "Design return periods")
+att.put.nc(gof_nc, "r.periods.qs", "long_name", "NC_CHAR", 
+           "The following return periods were used: 2, 5, 10, 15, 20 and 30 years")
+var.put.nc(gof_nc, "r.periods.qs", rperiods.bs)
+
+var.def.nc(gof_nc, varname = "r.periods.bs", vartype = "NC_SHORT", 
+           dimensions = "r.periods")
+att.put.nc(gof_nc, "r.periods.bs", "missing_value", "NC_SHORT", -9999)
+att.put.nc(gof_nc, "r.periods.bs", "short_name", "NC_CHAR", "Design return periods")
+att.put.nc(gof_nc, "r.periods.bs", "long_name", "NC_CHAR", 
+           "The following return periods were used: 2, 5, 10, 15, 20 and 30 years")
+var.put.nc(gof_nc, "r.periods.bs", rperiods.bs)
 
 # Variable for the return levels and various GOF
 var.def.nc(gof_nc, varname = "r.levels", vartype = "NC_FLOAT", 
@@ -100,12 +114,12 @@ BS <- array(NA,dim = c(dim.station, dim.distr, dim.method, dim.length_rec, dim.f
 var.put.nc(gof_nc, "BS", BS)
 rm(BS)
 
-var.def.nc(gof_nc, varname = "NT", vartype = "NC_FLOAT", 
-           dimensions = c("station", "distr", "method", "length.rec", "r.periods"))
-att.put.nc(gof_nc, "NT", "missing_value", "NC_FLOAT", -9999)
-NT <- array(NA,dim=c(dim.station, dim.distr, dim.method, dim.length_rec, dim.r_periods))
-var.put.nc(gof_nc, "NT", NT)
-rm(NT)
+# var.def.nc(gof_nc, varname = "NT", vartype = "NC_FLOAT", 
+#            dimensions = c("station", "distr", "method", "length.rec", "r.periods"))
+# att.put.nc(gof_nc, "NT", "missing_value", "NC_FLOAT", -9999)
+# NT <- array(NA,dim=c(dim.station, dim.distr, dim.method, dim.length_rec, dim.r_periods))
+# var.put.nc(gof_nc, "NT", NT)
+# rm(NT)
 
 var.def.nc(gof_nc, varname = "CS", vartype = "NC_FLOAT", 
            dimensions = c("station", "distr", "method", "length.rec", "few_quantiles"))
@@ -139,8 +153,8 @@ Q <- var.get.nc(nc, "Q")
 # Dumping all console output into errorlog.txt
 sink("../output/errorlog_gofnc.txt")  # CHECK DIR
 
-for (st in seq(along = station.nb.vect)) {
-# for (st in 2:2) {
+# for (st in seq(along = station.nb.vect)) {
+for (st in 1:104) {
   print(st)
   temp.Q <- as.vector(na.omit(Q[st, ]))
   if (length(temp.Q) <  min_years_data) {  # This is not GLOBAL_min_years to make sure "min_years_data" 
@@ -189,7 +203,8 @@ for (st in seq(along = station.nb.vect)) {
         if (length(param.estimate) > 1) {
         temp.r.levels <- RLEVELS4NC(param.estimate, return.periods, distr = distr)
         if (!all(is.na(temp.r.levels))) {
-        temp.QS <- QS4NC(temp.Q, temp.r.levels, return.periods)
+          # We use the small return periods for QS and BS (via thresholds for BS)
+        temp.QS <- QS4NC(temp.Q, temp.r.levels, rperiods.bs)
         temp.BS <- BS4NC(temp.Q, thresholds, param.estimate, distr = distr)
         # temp.NT <- gof_nt(temp.Q, rperiods.bs, param.estimate, distr = distr)  # TOCHECK
         
