@@ -52,7 +52,7 @@ dim.max_subsample <- max(sampling_years)
 
 gof_nc <- create.nc("../output/gof.nc")
 att.put.nc(gof_nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis results")
-att.put.nc(gof_nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", date()))
+att.put.nc(gof_nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
 # Defining dimensions in netCDF
 dim.def.nc(gof_nc, "station", dim.station)
@@ -153,8 +153,8 @@ Q <- var.get.nc(nc, "Q")
 # Dumping all console output into errorlog.txt
 sink("../output/errorlog_gofnc.txt")  # CHECK DIR
 
-# for (st in seq(along = station.nb.vect)) {
-for (st in 1:104) {
+for (st in seq(along = station.nb.vect)) {
+# for (st in 1:104) {
   print(st)
   temp.Q <- as.vector(na.omit(Q[st, ]))
   if (length(temp.Q) <  min_years_data) {  # This is not GLOBAL_min_years to make sure "min_years_data" 
@@ -178,7 +178,7 @@ for (st in 1:104) {
     for (d in 1:5) {
       distr <- distr.name[d]
       print(distr)
-      for (m in 1:4) {
+      for (m in 1:3) {
         method <- method.name[m]  
         print(method)
         print("Computing full dataset")
