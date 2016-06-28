@@ -23,8 +23,18 @@
 
 # Clean workspace, load libraries and source scripts  ---------------------------------
 
+# In order to get the fitdistr package
+packages <- c("devtools","quadprog")
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+  install.packages(setdiff(packages, rownames(installed.packages())))  
+}
+library(devtools)
+
+if (length(setdiff("fitdistrib", rownames(installed.packages()))) > 0) {
+  install_github("fbaffie/fitdistrib") 
+}
+
 rm(list = ls())  # clean out workspace and set working directory
-# setwd('C:/Users/flbk/Documents/GitHub/FlomKart/R')  # CHECK DIR
 
 # Load libraries
 library(RNetCDF)      # To work with NetCDF files
@@ -320,7 +330,7 @@ nc <- open.nc("../output/flood_database.nc", write = TRUE)  # Put FALSE for read
 Q <- var.get.nc(nc, "Q")
 
 # Dumping all console output into errorlog.txt
-sink("C:/Users/flbk/Documents/GitHub/FlomKart/output/errorlog.txt")  # CHECK DIR
+sink("../output/errorlog.txt")  # CHECK DIR
 
 for (st in seq(along = station.nb.vect)) {
 # for (st in 1:50) {
