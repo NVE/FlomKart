@@ -350,7 +350,7 @@ for (st in seq(along = station.nb.vect)) {
     for (d in 1:5) {
       distr <- distr.name[d]
       print(distr)
-      for (m in 1:4) {  # k
+      for (m in 1:3) {  # k  # no bayes
         # m=4  # k
         method <- method.name[m]  
         print(method)
