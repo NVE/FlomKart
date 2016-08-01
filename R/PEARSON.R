@@ -68,7 +68,7 @@ pearson_bayes <- function(dat) {
     }
     
     fail_safe <- failwith(NULL, BayesianMCMC)
-    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 3, confint = c(0.05, 0.95), dist = "P3")
+    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 2, confint = c(0.05, 0.95), dist = "P3")
         # PB Doesn't work or yields poor results with a prior
     # bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 3, confint = c(0.05, 0.95), dist = "P3",apriori=myprior)
     
@@ -86,9 +86,9 @@ pearson_bayes <- function(dat) {
 #       param$estimate[2] <- mean(as.vector(bayes$parameters[, 2, 1:3]))
 #       param$estimate[3] <- mean(as.vector(bayes$parameters[, 3, 1:3]))
       
-      param$se[1] <- sd(as.vector(bayes$parameters[, 1, 1:3]))
-      param$se[2] <- sd(as.vector(bayes$parameters[, 2, 1:3]))
-      param$se[3] <- sd(as.vector(bayes$parameters[, 3, 1:3]))
+      param$se[1] <- sd(as.vector(bayes$parameters[, 1, ]))
+      param$se[2] <- sd(as.vector(bayes$parameters[, 2, ]))
+      param$se[3] <- sd(as.vector(bayes$parameters[, 3, ]))
       
       invisible(param)
     }

@@ -223,7 +223,6 @@ gl_mom <- function(dat) {
 gl_bayes <- function(dat) {
 # Fit GL distribution with the Bayesian method  
   param <- list(estimate = c(NA, NA, NA), se = c(NA, NA, NA)) 
-  
   if (length(dat) >= GLOBAL_min_years_data) {
     # Prior for Bayes
     myprior <- function (x) {
@@ -233,7 +232,7 @@ gl_bayes <- function(dat) {
     }
     
     fail_safe <- failwith(NULL, BayesianMCMC)
-    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 3, 
+    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 2, 
                        confint = c(0.05, 0.95), dist = "GENLOGIS", apriori = myprior)
 
     if (is.null(bayes) == TRUE) {
@@ -250,9 +249,9 @@ gl_bayes <- function(dat) {
 #       param$estimate[2] <- mean(as.vector(bayes$parameters[, 2, 1:3]))
 #       param$estimate[3] <- mean(as.vector(bayes$parameters[, 3, 1:3]))
       
-      param$se[1] <- sd(as.vector(bayes$parameters[, 1, 1:3]))
-      param$se[2] <- sd(as.vector(bayes$parameters[, 2, 1:3]))
-      param$se[3] <- sd(as.vector(bayes$parameters[, 3, 1:3]))
+      param$se[1] <- sd(as.vector(bayes$parameters[, 1, ]))
+      param$se[2] <- sd(as.vector(bayes$parameters[, 2, ]))
+      param$se[3] <- sd(as.vector(bayes$parameters[, 3, ]))
       
       invisible(param)
     }

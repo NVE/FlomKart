@@ -140,7 +140,6 @@ gev_mom <- function(dat) {
 gev_bayes <- function(dat) {
 
   param <- list(estimate = c(NA, NA, NA), se = c(NA, NA, NA)) 
-  
   if (length(dat) >= GLOBAL_min_years_data) {
     # Prior for Bayes
     myprior <- function (x) {
@@ -150,7 +149,7 @@ gev_bayes <- function(dat) {
     }
     
     fail_safe <- failwith(NULL, BayesianMCMC)
-    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 3, confint = c(0.05, 0.95), dist = "GEV", apriori = myprior)
+    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 2, confint = c(0.05, 0.95), dist = "GEV", apriori = myprior)
 
     if (is.null(bayes) == TRUE) {
       print("Warning: the function BayesianMCMC failed in gev_bayes")
@@ -168,9 +167,9 @@ gev_bayes <- function(dat) {
 #       param$estimate[2] <- mean(as.vector(bayes$parameters[, 2, 1:3]))
 #       param$estimate[3] <- mean(as.vector(bayes$parameters[, 3, 1:3]))
       
-      param$se[1] <- sd(as.vector(bayes$parameters[ , 1, 1:3]))
-      param$se[2] <- sd(as.vector(bayes$parameters[ , 2, 1:3]))
-      param$se[3] <- sd(as.vector(bayes$parameters[ , 3, 1:3]))
+      param$se[1] <- sd(as.vector(bayes$parameters[ , 1, ]))
+      param$se[2] <- sd(as.vector(bayes$parameters[ , 2, ]))
+      param$se[3] <- sd(as.vector(bayes$parameters[ , 3, ]))
       
       invisible(param)
     }
