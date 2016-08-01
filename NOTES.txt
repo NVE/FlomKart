@@ -1,0 +1,50 @@
+----------------------------------------------------------------------------------------- 
+					METHODOLOGY
+----------------------------------------------------------------------------------------- 
+
+- TODO: Use Bayes with nb_pas=10000 and nb_chaines = 1. Maybe give a starting set of parameters by running Lmom (or MLE/mom) once.
+	Find a prior for Pearson 
+- TODO: Look at potential pb with pearson_mle (package loading pb or need a starting set of parameters). Pearson_bayes is also not great. Finish standard tests in fitdistrib package
+- TODO: Have a built-in test to check that all stations worked for all distr/method combinations for at least the full length of record
+- TODO: Save processed input data into csv. Look at Lena's script to see if the whole process could be easier and maybe packaged into NVEDATA
+- TODO: fix the variable "dates" (character length missing in dimensions) or just put "months" variable
+- TODO: do a separate NetCDF file for the bayes results. Run it with the paralel package. Do nb_pas = 10 000 but only 1 chain
+- TODO: do sub-sampling up to 90 years even for stations that have less data (thanks to replacement)
+
+
+
+Packaging the GOF functions could be nice
+Maybe we should have a separate NetCDF file for Bayes in order to save qunatiles instead of parameters. But don't forget we need parameters for KS/AD
+
+Reproducability: should we add a set.seed for the creation of the random numbers and remember this seed in NetCDF?
+
+Impact of station properties on mean/median annual floods (and possibly flood quantiles too)
+
+Save Q for a fixed time span 1880-2020 to more easily make yearly averages?
+
+Impact of station properties on mean/mean annual flood (or small quantiles).
+GRAD_ELV: river gradient
+FELT_LE_KM: catchment lengt
+SNAUFJPRO: % of area above the tree line
+ELV_LE_KM: river length
+
+When looking at the impact of catchment area, be careful of catchments that may have a substantial lake percentage.
+
+Investigate LogPearson, could be tricky for KS and AD
+
+----------------------------------------------------------------------------------------- 
+					REPORT:
+----------------------------------------------------------------------------------------- 
+
+Inkscape of methodology. A detailed reporting on the structure of the NetCDF files could go as appendix
+Inkscape of shiny app with inputs / reactives /ouputs as presented by Joe Cheng.
+
+Bayes: mention which prior was used in report
+Update tables and figures with new data
+
+
+----------------------------------------------------------------------------------------- 
+					LITERATURE
+----------------------------------------------------------------------------------------- 
+
+Flood Freq Australia: Lmoments less sensitive to outliers
