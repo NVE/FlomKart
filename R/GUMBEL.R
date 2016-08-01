@@ -86,7 +86,7 @@ gumbel_bayes <- function(dat) {
 
     # Should we do gumbel with a prior? I tried, it didn't work
     fail_safe <- failwith(NULL, BayesianMCMC)
-    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 3, 
+    bayes <- fail_safe(dat, nbpas = 5000, nbchaines = 2, 
                        confint = c(0.05, 0.95), dist = "GUMBEL")
     
     if (is.null(bayes) == TRUE) {
@@ -102,8 +102,8 @@ gumbel_bayes <- function(dat) {
 #       param$estimate[1] <- mean(as.vector(bayes$parameters[, 1, 1:3]))
 #       param$estimate[2] <- mean(as.vector(bayes$parameters[, 2, 1:3]))
 
-      param$se[1] <- sd(as.vector(bayes$parameters[, 1, 1:3]))
-      param$se[2] <- sd(as.vector(bayes$parameters[, 2, 1:3]))
+      param$se[1] <- sd(as.vector(bayes$parameters[, 1, ]))
+      param$se[2] <- sd(as.vector(bayes$parameters[, 2, ]))
 
       invisible(param)
     }
