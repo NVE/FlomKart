@@ -103,6 +103,10 @@ for (i in seq(along = station.nb.vect.init)) {
   
 }
 
+dim.station <- 5  # length(station.nb.vect)
+station.nb.vect <- station.nb.vect[1:dim.station]
+
+
 # Read station coordinates
 utminfo <- read.table("../data/Coordinater for kart_for_R.txt",  
                       sep = "\t", header = T)  # CHECK DIR
@@ -134,13 +138,13 @@ catchment.max.height <- catchment.prop$HEIGHT_MAX[as.numeric(indexes.in.catchmen
 
 ################################################
 
-dim.station <- length(station.nb.vect)
+
 dim.distr <- 5
 dim.method <- 4
 dim.param <- 3
 dim.length_total_record <- 150
 dim.length_rec <- 30   # This means that we will do subsampling for i1=30,i2=35,.....i23=140 years of record. 
-dim.random_runs <- 50
+dim.random_runs <- 10
 dim.characters <- 64
 sampling_years <- seq(min_years_data, 5 * trunc(143 / 5), 5)  # 143 could be parametized
 dim.max_subsample <- max(sampling_years)
@@ -333,7 +337,7 @@ Q <- var.get.nc(nc, "Q")
 sink("../output/errorlog.txt")  # CHECK DIR
 
 for (st in seq(along = station.nb.vect)) {
-# for (st in 1:50) {
+# for (st in 1:5) {
   print(st)
   temp.Q <- as.vector(na.omit(Q[st, ]))
   if (length(temp.Q) <  min_years_data) {
@@ -398,7 +402,7 @@ for (st in seq(along = station.nb.vect)) {
         # j is the index from 1 to 23 and sampling_years[j] is 30, 35... 140
         print("Computing sampled dataset")
         
-        # if (m < 4) {  # Random sampling of Bayes takes a very long time  # k
+        if (m < 4) {  # Random sampling of Bayes takes a very long time  # k
           j <- 1
           while (sampling_years[j] <= length(temp.Q) && sampling_years[j] <= max(sampling_years)) {
             for (rs in 1:dim.random_runs) {
@@ -431,7 +435,7 @@ for (st in seq(along = station.nb.vect)) {
         # Remove temp variables from memory
         rm(temp.param.estimate)
         rm(temp.param.se)
-      # }  # k
+      }  # k
     }
   } 
   rm(temp.Q)

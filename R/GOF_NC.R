@@ -153,8 +153,8 @@ Q <- var.get.nc(nc, "Q")
 # Dumping all console output into errorlog.txt
 sink("../output/errorlog_gofnc.txt")  # CHECK DIR
 
-for (st in seq(along = station.nb.vect)) {
-# for (st in 1:104) {
+# for (st in seq(along = station.nb.vect)) {
+for (st in 1:5) {
   print(st)
   temp.Q <- as.vector(na.omit(Q[st, ]))
   if (length(temp.Q) <  min_years_data) {  # This is not GLOBAL_min_years to make sure "min_years_data" 
@@ -243,7 +243,7 @@ for (st in seq(along = station.nb.vect)) {
         # RANDOM START: Fill up with the random runs with sampled data TO DO
         # j is the index from 1 to 23 and sampling_years[j] is 30, 35... 140
         print("Computing sampled dataset")
-        # if (m < 4) {  # Random sampling of Bayes takes a very long time
+        if (m < 4) {  # Random sampling of Bayes takes a very long time
         j <- 1
         while (sampling_years[j] <= length(temp.Q) && sampling_years[j] <= max(sampling_years)) {
         
@@ -374,7 +374,7 @@ for (st in seq(along = station.nb.vect)) {
           if (j == length(sampling_years)) { break }
           else { j <- j + 1 }
         }
-      # }  # CLOSING IF FOR THE EXCLUSION OF BAYES FOR RANDOM RUNS
+      }  # CLOSING IF FOR THE EXCLUSION OF BAYES FOR RANDOM RUNS
         # WRITE TO NC
         # reminder r.levels[st, d, m, length_rec, dim.few_quantiles, dim.r_periods]
         var.put.nc(gof_nc, "r.levels", data = temp.r.levels, start = c(st, d, m, 1, 1, 1), 
