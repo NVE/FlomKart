@@ -1,5 +1,6 @@
 # FlomKart
-Flood frequency analysis for the FlomKart project. The output data of the repo is fed into the FlomKart_ShinyApp visualization tool
+Flood frequency analysis for the FlomKart project. The output data of the repo is fed into the FlomKart_ShinyApp visualization tool.
+This is still work in progress!
 
 # Methodology
 Only station with more than 30 years of data are used.
