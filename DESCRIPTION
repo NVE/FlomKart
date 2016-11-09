@@ -1,0 +1,22 @@
+Package: FlomKart
+Type: Package
+Title: Set of functions to estimate the performance of various methods for flood frequency analysis
+Version: 0.1
+Date: 2016-11-02
+Authors@R: person("Florian", "Kobierska", email = "fbaffie@gmail.com", role = c("aut", "cre"))
+Description: Work for the FlomKart project
+License: Norgedata (see license.md)
+LazyData: TRUE
+RoxygenNote: 5.0.1
+Imports: RNetCDF,
+  quadprog,
+  goftest,
+  plyr,
+  magrittr,
+	leaflet,
+  fitdistrib,
+  lubridate,
+  parallel,
+  foreach
+Suggests: packagedocs
+VignetteBuilder: packagedocs
