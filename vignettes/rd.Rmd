@@ -1,6 +1,6 @@
 ---
 title: "FlomKart Documentation"
-subtitle: "Set of functions to estimate the performance of various methods for flood frequency analysis"
+subtitle: "Functions for flood frequency analysis"
 author: ""
 copyright: ""
 output:
