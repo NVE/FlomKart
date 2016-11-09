@@ -17,6 +17,7 @@ Imports: RNetCDF,
   fitdistrib,
   evd,
   nsRFA,
+  stats,
   lubridate,
   parallel,
   foreach

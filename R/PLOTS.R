@@ -64,7 +64,7 @@ plot_all  <- function(dat, GOF.list, param, distr = "distr", method = "method") 
 #' @importFrom nsRFA f.gamma
 #' @importFrom evd dgev
 #' @importFrom evd dgumbel
-#' @importFrom evd dgamma
+#' @importFrom stats dgamma
 #' @export
 #'
 #' @examples
