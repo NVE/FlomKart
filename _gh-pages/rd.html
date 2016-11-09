@@ -1,0 +1,841 @@
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc" />
+
+  
+  
+  <title>FlomKart Documentation</title>
+
+    <script src="rd_files/jquery-1.11.3/jquery.min.js"></script>
+  <link href="rd_files/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="rd_files/bootstrap-3.3.2/js/bootstrap.min.js"></script>
+  <script src="rd_files/bootstrap-3.3.2/shim/html5shiv.min.js"></script>
+  <script src="rd_files/bootstrap-3.3.2/shim/respond.min.js"></script>
+  <link href="rd_files/highlight-8.4/tomorrow.css" rel="stylesheet" />
+  <script src="rd_files/highlight-8.4/highlight.pack.js"></script>
+  <link href="rd_files/fontawesome-4.3.0/css/font-awesome.min.css" rel="stylesheet" />
+  <script src="rd_files/stickykit-1.1.1/sticky-kit.min.js"></script>
+  <script src="rd_files/jqueryeasing-1.3/jquery.easing.min.js"></script>
+  <link href="rd_files/recliner-0.2.2/recliner.css" rel="stylesheet" />
+  <script src="rd_files/recliner-0.2.2/recliner.min.js"></script>
+  <script src="rd_files/recliner-0.2.2/onload.js"></script>
+  <link href="rd_files/packagedocs-0.0.1/pd.css" rel="stylesheet" />
+  <script src="rd_files/packagedocs-0.0.1/pd.js"></script>
+  <script src="rd_files/packagedocs-0.0.1/pd-sticky-toc.js"></script>
+  
+  
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+
+<body>
+
+  
+  <header class="navbar navbar-white navbar-fixed-top" role="banner" id="header">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+                <a href="index.html" class="navbar-brand page-scroll">
+        FlomKart Documentation - Set of functions to estimate the performance of various methods for flood frequency analysis
+        </a>
+      </div>
+            <nav class="collapse navbar-collapse" role="navigation">
+        <ul class="nav nav-pills pull-right">
+<li>
+<a href='index.html'>Docs</a>
+</li>
+<li class="active">
+<a href='rd.html'>Package Ref</a>
+</li>
+        </ul>
+      </nav>
+          </div>
+  </header>
+
+  <!-- Begin Body -->
+  <div class="container">
+    <div class="row">
+            <div class="col-md-3" id="sidebar-col">
+        <div id="toc">
+          <ul>
+          <li><a href="#package-functions">Package Functions</a><ul>
+          <li><a href="#bs4nc">BS4NC</a></li>
+          <li><a href="#fillup_gofnc">fillup_gofnc</a></li>
+          <li><a href="#fillup_nc">fillup_nc</a></li>
+          <li><a href="#fit_distr">fit_distr</a></li>
+          <li><a href="#gof_ad">gof_ad</a></li>
+          <li><a href="#gof_cs">gof_cs</a></li>
+          <li><a href="#gof_ks">gof_ks</a></li>
+          <li><a href="#gof_nt">gof_nt</a></li>
+          <li><a href="#load_1sample">load_1sample</a></li>
+          <li><a href="#load_samples">load_samples</a></li>
+          <li><a href="#norway_map">norway_map</a></li>
+          <li><a href="#norway_map2">norway_map2</a></li>
+          <li><a href="#plot_all">plot_all</a></li>
+          <li><a href="#plot_density">plot_density</a></li>
+          <li><a href="#plot_ecdf">plot_ecdf</a></li>
+          <li><a href="#plot_qq">plot_qq</a></li>
+          <li><a href="#plot_rlevel">plot_rlevel</a></li>
+          <li><a href="#qs4nc">QS4NC</a></li>
+          <li><a href="#rlevels4nc">RLEVELS4NC</a></li>
+          <li><a href="#run_all">run_all</a></li>
+          <li><a href="#run_all_ad">run_all_ad</a></li>
+          <li><a href="#run_all_ff">run_all_ff</a></li>
+          <li><a href="#run_all_ff2">run_all_ff2</a></li>
+          <li><a href="#run_all_ks">run_all_ks</a></li>
+          <li><a href="#run_all_norm">run_all_norm</a></li>
+          <li><a href="#save_coordinates">save_coordinates</a></li>
+          <li><a href="#sdat_load">sdat_load</a></li>
+          <li><a href="#sdat_plot">sdat_plot</a></li>
+          </ul></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-9" id="content-col">
+      
+<div id="content-top"></div>
+<h1>
+Set of functions to estimate the performance of various methods for flood frequency analysis
+</h1>
+<p>
+<strong>Authors:</strong> <a href="mailto:fbaffie@gmail.com">Florian Kobierska</a> [aut, cre]
+</p>
+<p>
+<strong>Version:</strong> 0.1
+</p>
+<p>
+<strong>License:</strong> Norgedata (see license.md)
+</p>
+<h4>
+Description
+</h4>
+<p>
+Work for the FlomKart project
+</p>
+<h4>
+Imports
+</h4>
+<p>
+RNetCDF, quadprog, goftest, plyr, magrittr, leaflet, fitdistrib, lubridate, parallel, foreach
+</p>
+<h4>
+Suggests
+</h4>
+<p>
+packagedocs
+</p>
+<div id="package-functions" class="section level1">
+<h1>Package Functions</h1>
+<div id="bs4nc" class="section level2">
+<h2>BS4NC</h2>
+<a id="BS4NC_alias"></a>
+<h3>
+BS4NC
+</h3>
+<p class="rd-p">
+Brier Score. This is implemented according to Equation 1 of the “Cross validation study and verification document”
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>BS4NC(dat, threshold, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+Brier Score. This is implemented according to Equation 1 of the “Cross validation study and verification document”
+</dd>
+</dl>
+</div>
+<div id="fillup_gofnc" class="section level2">
+<h2>fillup_gofnc</h2>
+<a id="fillup_gofnc_alias"></a>
+<h3>
+fillup_gofnc
+</h3>
+<p class="rd-p">
+Function to fill up the gof_nc database
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>fillup_gofnc()</div></code></pre>
+</div>
+<div id="fillup_nc" class="section level2">
+<h2>fillup_nc</h2>
+<a id="fillup_nc_alias"></a>
+<h3>
+fillup_nc
+</h3>
+<p class="rd-p">
+Function to fill up the nc database
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>fillup_nc()</div></code></pre>
+</div>
+<div id="fit_distr" class="section level2">
+<h2>fit_distr</h2>
+<a id="fit_distr_alias"></a>
+<h3>
+fit_distr
+</h3>
+<p class="rd-p">
+The function that calls the right fitting function for each distribution and fitting method
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>fit_distr(dat, distr&nbsp;=&nbsp;"distr", method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+The function that calls the right fitting function for each distribution and fitting method
+</dd>
+</dl>
+</div>
+<div id="gof_ad" class="section level2">
+<h2>gof_ad</h2>
+<a id="gof_ad_alias"></a>
+<h3>
+gof_ad
+</h3>
+<p class="rd-p">
+Anderson Darling
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>gof_ad(dat, param, distr&nbsp;=&nbsp;"distr", test.stat&nbsp;=&nbsp;TRUE, p.value&nbsp;=&nbsp;FALSE)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+p.value
+</dt>
+<dd class="rd-dd">
+Anderson Darling
+</dd>
+</dl>
+</div>
+<div id="gof_cs" class="section level2">
+<h2>gof_cs</h2>
+<a id="gof_cs_alias"></a>
+<h3>
+gof_cs
+</h3>
+<p class="rd-p">
+Chi Square calculation. Does not work well
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>gof_cs(dat, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+Chi Square calculation. Does not work well
+</dd>
+</dl>
+</div>
+<div id="gof_ks" class="section level2">
+<h2>gof_ks</h2>
+<a id="gof_ks_alias"></a>
+<h3>
+gof_ks
+</h3>
+<p class="rd-p">
+Kolmogorov Smirnov. Gives results with warnings but this is because some flood data are repeated (for some strange reason)
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>gof_ks(dat, param, distr&nbsp;=&nbsp;"distr", test.stat&nbsp;=&nbsp;TRUE, p.value&nbsp;=&nbsp;FALSE)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+p.value
+</dt>
+<dd class="rd-dd">
+Kolmogorov Smirnov. Gives results with warnings but this is because some flood data are repeated (for some strange reason)
+</dd>
+</dl>
+</div>
+<div id="gof_nt" class="section level2">
+<h2>gof_nt</h2>
+<a id="gof_nt_alias"></a>
+<h3>
+gof_nt
+</h3>
+<p class="rd-p">
+Function calculating the NT reliability measure TO FINISH
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>gof_nt(dat, rperiods.nt, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+Function calculating the NT reliability measure TO FINISH
+</dd>
+</dl>
+</div>
+<div id="load_1sample" class="section level2">
+<h2>load_1sample</h2>
+<a id="load_1sample_alias"></a>
+<h3>
+load_1sample
+</h3>
+<p class="rd-p">
+Function that returns only 1 sample with k omited values, according to a specific method (random, sorted min and max)
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>load_1sample(dat.fulll, k, method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+Function that returns only 1 sample with k omited values, according to a specific method (random, sorted min and max)
+</dd>
+</dl>
+</div>
+<div id="load_samples" class="section level2">
+<h2>load_samples</h2>
+<a id="load_samples_alias"></a>
+<h3>
+load_samples
+</h3>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>load_samples(dat.full, k)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+k
+</dt>
+<dd class="rd-dd">
+</dd>
+</dl>
+</div>
+<div id="norway_map" class="section level2">
+<h2>norway_map</h2>
+<a id="norway_map_alias"></a>
+<h3>
+norway_map
+</h3>
+<p class="rd-p">
+Figure: MAP OF NORWAY WITH ALL THE STATIONS. WORKS
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>norway_map(dat, station.nb.vect)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+station.nb.vect
+</dt>
+<dd class="rd-dd">
+Figure: MAP OF NORWAY WITH ALL THE STATIONS. WORKS
+</dd>
+</dl>
+</div>
+<div id="norway_map2" class="section level2">
+<h2>norway_map2</h2>
+<a id="norway_map2_alias"></a>
+<h3>
+norway_map2
+</h3>
+<p class="rd-p">
+MAP OF NORWA WITH COLOR CHANGING ACCORDING TO THE NUMBER OF DATA.
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>norway_map2(dat, station.nb.vect)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+station.nb.vect
+</dt>
+<dd class="rd-dd">
+MAP OF NORWA WITH COLOR CHANGING ACCORDING TO THE NUMBER OF DATA.
+</dd>
+</dl>
+</div>
+<div id="plot_all" class="section level2">
+<h2>plot_all</h2>
+<a id="plot_all_alias"></a>
+<h3>
+plot_all
+</h3>
+<p class="rd-p">
+This function creates a 2 by 2 plot by calling all common plotting functions It plots for any distribution and method, as well as the distribution parameters and Goodness Of Fit values Returns nothing, saves nothing
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>plot_all(dat, GOF.list, param, distr&nbsp;=&nbsp;"distr", method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+This function creates a 2 by 2 plot by calling all common plotting functions It plots for any distribution and method, as well as the distribution parameters and Goodness Of Fit values Returns nothing, saves nothing
+</dd>
+</dl>
+</div>
+<div id="plot_density" class="section level2">
+<h2>plot_density</h2>
+<a id="plot_density_alias"></a>
+<h3>
+plot_density
+</h3>
+<p class="rd-p">
+plot fitted probability density function to estimated empirical pdf Returns nothing, saves nothing
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>plot_density(dat, GOF.list, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+plot fitted probability density function to estimated empirical pdf Returns nothing, saves nothing
+</dd>
+</dl>
+</div>
+<div id="plot_ecdf" class="section level2">
+<h2>plot_ecdf</h2>
+<a id="plot_ecdf_alias"></a>
+<h3>
+plot_ecdf
+</h3>
+<p class="rd-p">
+Plot estimated and empirical cumulative distribution function
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>plot_ecdf(dat, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+Plot estimated and empirical cumulative distribution function
+</dd>
+</dl>
+<h4>
+Value
+</h4>
+<p class="rd-p">
+<dl>
+Returns nothing, saves nothing
+</dl>
+</p>
+</div>
+<div id="plot_qq" class="section level2">
+<h2>plot_qq</h2>
+<a id="plot_qq_alias"></a>
+<h3>
+plot_qq
+</h3>
+<p class="rd-p">
+QQ plot of empiricial against modelled
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>plot_qq(dat, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+QQ plot of empiricial against modelled
+</dd>
+</dl>
+<h4>
+Value
+</h4>
+<p class="rd-p">
+<dl>
+Returns nothing, saves nothing
+</dl>
+</p>
+</div>
+<div id="plot_rlevel" class="section level2">
+<h2>plot_rlevel</h2>
+<a id="plot_rlevel_alias"></a>
+<h3>
+plot_rlevel
+</h3>
+<p class="rd-p">
+Plot return levels
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>plot_rlevel(dat, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+Plot return levels
+</dd>
+</dl>
+<h4>
+Value
+</h4>
+<p class="rd-p">
+<dl>
+Returns nothing, saves nothing
+</dl>
+</p>
+</div>
+<div id="qs4nc" class="section level2">
+<h2>QS4NC</h2>
+<a id="QS4NC_alias"></a>
+<h3>
+QS4NC
+</h3>
+<p class="rd-p">
+Quantile Score. Only uses dat.sample so the calling script should be sending DAT.SAMPLE! This is implemented according to Equation 2 of the “Cross validation study and verification document”
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>QS4NC(dat, r.levels, r.periods)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+r.periods
+</dt>
+<dd class="rd-dd">
+Quantile Score. Only uses dat.sample so the calling script should be sending DAT.SAMPLE! This is implemented according to Equation 2 of the “Cross validation study and verification document”
+</dd>
+</dl>
+</div>
+<div id="rlevels4nc" class="section level2">
+<h2>RLEVELS4NC</h2>
+<a id="RLEVELS4NC_alias"></a>
+<h3>
+RLEVELS4NC
+</h3>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>RLEVELS4NC(param.estimate, return.periods, distr&nbsp;=&nbsp;"distr")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+distr
+</dt>
+<dd class="rd-dd">
+</dd>
+</dl>
+</div>
+<div id="run_all" class="section level2">
+<h2>run_all</h2>
+<a id="run_all_alias"></a>
+<h3>
+run_all
+</h3>
+<p class="rd-p">
+The function to run all distributions and all methods and output csv files of the GOF
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>run_all(dat, station.nb.vect, distr&nbsp;=&nbsp;"distr", method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+The function to run all distributions and all methods and output csv files of the GOF
+</dd>
+</dl>
+</div>
+<div id="run_all_ad" class="section level2">
+<h2>run_all_ad</h2>
+<a id="run_all_ad_alias"></a>
+<h3>
+run_all_ad
+</h3>
+<p class="rd-p">
+TEST OF RUN ALL FOR AD ONLY
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>run_all_ad(dat, station.nb.vect, method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+TEST OF RUN ALL FOR AD ONLY
+</dd>
+</dl>
+</div>
+<div id="run_all_ff" class="section level2">
+<h2>run_all_ff</h2>
+<a id="run_all_ff_alias"></a>
+<h3>
+run_all_ff
+</h3>
+<p class="rd-p">
+FF function copied from run_all.r Test of run_all for ff only.
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>run_all_ff(dat, station.nb.vect, distr&nbsp;=&nbsp;"distr", method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+FF function copied from run_all.r Test of run_all for ff only.
+</dd>
+</dl>
+</div>
+<div id="run_all_ff2" class="section level2">
+<h2>run_all_ff2</h2>
+<a id="run_all_ff2_alias"></a>
+<h3>
+run_all_ff2
+</h3>
+<p class="rd-p">
+Test of run_all for ff only. TO COMPARE WITH run_all_ff in F4NCE.R!!!
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>run_all_ff2(dat, station.nb.vect, distr&nbsp;=&nbsp;"distr", method&nbsp;=&nbsp;"method")</div></code></pre>
+</div>
+<div id="run_all_ks" class="section level2">
+<h2>run_all_ks</h2>
+<a id="run_all_ks_alias"></a>
+<h3>
+run_all_ks
+</h3>
+<p class="rd-p">
+Test of run_all for Ks only.
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>run_all_ks(dat, station.nb.vect, method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+Test of run_all for Ks only.
+</dd>
+</dl>
+</div>
+<div id="run_all_norm" class="section level2">
+<h2>run_all_norm</h2>
+<a id="run_all_norm_alias"></a>
+<h3>
+run_all_norm
+</h3>
+<p class="rd-p">
+The function to run all distributions and all methods and output csv files of the GOF
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>run_all_norm(dat, station.nb.vect, distr&nbsp;=&nbsp;"distr", method&nbsp;=&nbsp;"method")</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+method
+</dt>
+<dd class="rd-dd">
+The function to run all distributions and all methods and output csv files of the GOF
+</dd>
+</dl>
+</div>
+<div id="save_coordinates" class="section level2">
+<h2>save_coordinates</h2>
+<a id="save_coordinates_alias"></a>
+<h3>
+save_coordinates
+</h3>
+<p class="rd-p">
+This function saves a new csv with the utm coordinates of each station in station.nb.vect
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>save_coordinates(dat, station.nb.vect)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+station.nb.vect
+</dt>
+<dd class="rd-dd">
+This function saves a new csv with the utm coordinates of each station in station.nb.vect
+</dd>
+</dl>
+</div>
+<div id="sdat_load" class="section level2">
+<h2>sdat_load</h2>
+<a id="sdat_load_alias"></a>
+<h3>
+sdat_load
+</h3>
+<p class="rd-p">
+Loads flood dat for a specific station
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>sdat_load(dat, station.nb)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+station.nb
+</dt>
+<dd class="rd-dd">
+Loads flood dat for a specific station
+</dd>
+</dl>
+</div>
+<div id="sdat_plot" class="section level2">
+<h2>sdat_plot</h2>
+<a id="sdat_plot_alias"></a>
+<h3>
+sdat_plot
+</h3>
+<p class="rd-p">
+Function to plot data histogram, pdf, ecdf and qqplot
+</p>
+<h4>
+Usage
+</h4>
+<pre class="r"><code><div>sdat_plot(dat)</div></code></pre>
+<h4>
+Arguments
+</h4>
+<dl class="rd-dl">
+<dt>
+dat
+</dt>
+<dd class="rd-dd">
+Function to plot data histogram, pdf, ecdf and qqplot
+</dd>
+</dl>
+</div>
+</div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="footer">
+    <div class="container">
+      <div class="col-md-6">
+              </div>
+      <div class="col-md-6">
+        <p class="pull-right">created with <a href="https://github.com/hafen/packagedocs">packagedocs</a>
+                  </p>
+      </div>
+    </div>
+  </div>
+
+  
+</body>
+</html>

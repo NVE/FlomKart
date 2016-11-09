@@ -18,3 +18,5 @@ Imports: RNetCDF,
   lubridate,
   parallel,
   foreach
+Suggests: packagedocs
+VignetteBuilder: packagedocs
