@@ -1,7 +1,7 @@
 # GOF.R
-# MOST OF THOSE FUNCTIONS ARE SUPERCEDED BY FUNCTIONS IN F4NC.R
+# MOST OF THOSE FUNCTIONS ARE SUPERCEDED BY FUNCTIONS IN F4NC.R --->>> TO DOUBLE CHECK!!
 
-# Gathers some the goodness of fit functions 
+# Gathers some the goodness of fit functions
 
 gof_rlevel <- function(dat.full, dat.sample, param.full, param.sample, distr = "distr") {
 # Divergence in return levels
@@ -9,11 +9,11 @@ gof_rlevel <- function(dat.full, dat.sample, param.full, param.sample, distr = "
   r.periods <- c(50, 100, 200, 500)
 
   # Computing return levels for the specified return periods
-  if(distr == 'gumbel') { 
+  if(distr == 'gumbel') {
     r.levels.full <- invF.gumb(F = (1 - 1 / r.periods), param.full[1], param.full[2])
     r.levels.sample <- invF.gumb(F = (1 - 1 / r.periods), param.sample[1], param.sample[2])
   }
-  if(distr == 'gamma') { 
+  if(distr == 'gamma') {
     r.levels.full <- qgamma(p = (1 - 1 / r.periods), shape=param.full[1], scale =1/param.full[2])
     r.levels.sample <- qgamma(p = (1 - 1 / r.periods), shape=param.sample[1], scale =1/param.sample[2])
   }
@@ -29,11 +29,11 @@ gof_rlevel <- function(dat.full, dat.sample, param.full, param.sample, distr = "
     r.levels.full <- invF.gamma(F = (1 - 1 / r.periods), param.full[1], param.full[2], param.full[3])
     r.levels.sample <- invF.gamma(F = (1 - 1 / r.periods), param.sample[1], param.sample[2], param.sample[3])
   }
-  # Relative difference in %, compared to the density function of the full dataset 
+  # Relative difference in %, compared to the density function of the full dataset
   div.vect <- na.omit(abs(r.levels.full - r.levels.sample) / r.levels.full) * 100
-  
+
   div <- list(max = c(), mean = c())
-  
+
   # We take the max and the mean over the whole distribution
   div$max <- max(div.vect)
   div$mean <- mean(div.vect)
@@ -46,11 +46,11 @@ gof_div <- function(dat.full, dat.sample, param.full, param.sample, distr = "dis
 
   xmax <- max(dat.full)
   # Density fuction for the full and reduced datasets
-  if(distr == 'gumbel') { 
+  if(distr == 'gumbel') {
     density.full <-   dgumbel(0:xmax, param.full[1], param.full[2])
     density.sample <- dgumbel(0:xmax, param.sample[1], param.sample[2])
   }
-  if(distr == 'gamma')  { 
+  if(distr == 'gamma')  {
     density.full <-   dgamma(0:xmax, param.full[1], param.full[2])
     density.sample <- dgamma(0:xmax, param.sample[1], param.sample[2])
   }
@@ -66,8 +66,8 @@ gof_div <- function(dat.full, dat.sample, param.full, param.sample, distr = "dis
     density.full <-   f.gamma(0:xmax, param.full[1], param.full[2], param.full[3])
     density.sample <- f.gamma(0:xmax, param.sample[1], param.sample[2], param.sample[3])
   }
-  
-  # Relative difference in %, compared to the density function of the full dataset 
+
+  # Relative difference in %, compared to the density function of the full dataset
   div.vect <- na.omit(abs(density.full - density.sample) / density_full) * 100
   div <- list(max = c(),mean = c())
   # We take the max and the mean over the whole distribution
@@ -78,7 +78,7 @@ gof_div <- function(dat.full, dat.sample, param.full, param.sample, distr = "dis
 
 gof_stability <- function(dat.full, param.full, k, distr = "distr", method = "method") {
 # sampling function calling the stability measures
-  
+
   L <- length(dat.full) - 1         # Length of initial dataset
   stab <- list(max = c(), mean = c())
 
@@ -97,12 +97,12 @@ gof_stability <- function(dat.full, param.full, k, distr = "distr", method = "me
       next(j)  # We could add a warning too
     }
     # Fill vectors with max and min divergence (density function or return level)
-    temp <- gof_rlevel(dat.full, dat.sample, param.full, param.sample, 
+    temp <- gof_rlevel(dat.full, dat.sample, param.full, param.sample,
                         as.character(distr))
     stab$max[j] <-  temp$max
     stab$mean[j] <-  temp$mean
   }
-  stab$max <- max(na.omit(stab$max)) 
+  stab$max <- max(na.omit(stab$max))
   stab$mean <- mean(na.omit(stab$mean))
   invisible(stab)
 }
@@ -118,13 +118,13 @@ gof_area <- function(dat, station.nb.vect) {
   for ( distr in distributions ) {
     # for (method in fitting_methods) {
       print( paste( "fitting parameters for ", distr))
-      
+
       ff <- run_all_ff(dat, station.nb.vect, distr, method)
       sorted.ff.1 <- sort(ff$ff1)
       sorted.ff.2 <- sort(ff$ff2)
       uniform.1 <- seq(0, 1, length.out = length(sorted.ff.1))
       uniform.2 <- seq(0, 1, length.out = length(sorted.ff.2))
-      
+
 #       area.1$distr <- sum(sorted.ff.1 - uniform.1) / 2 / length(sorted.ff.1)
 #       area.2$distr <- sum(sorted.ff.2 - uniform.2) / 2 / length(sorted.ff.2)
 #       area.1.abs$distr  <- sum(abs(sorted.ff.1 - uniform.1)) / 2 / length(sorted.ff.1)
@@ -143,10 +143,10 @@ return(results)
 
 gof_aic <- function(dat, param, distr = "distr") {
 # Aikake Information Criterion. TO IMPLEMENT
-    
+
 }
 
 
 gof_bic <- function(dat, param, distr = "distr") {
-# Bayesian Information Criterion. TO IMPLEMENT 
+# Bayesian Information Criterion. TO IMPLEMENT
 }
