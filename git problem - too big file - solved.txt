@@ -1,7 +1,0 @@
-
-Why not use this simple but powerful command?
-
-git filter-branch --tree-filter 'rm -f DVD-rip' HEAD
-The --tree-filter option runs the specified command after 
-each checkout of the project and then recommits the results. 
-In this case, you remove a file called DVD-rip from every snapshot, whether it exists or not.
