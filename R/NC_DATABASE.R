@@ -51,13 +51,13 @@
 
 
 
-#' fillup_nc
-#' @description Function to fill up the nc database
+#' update_nc
+#' @description Function to update the nc database
 #' @return
 #' @export
 #'
 #' @examples
-fillup_nc <- function() {
+update_nc <- function() {
 
 
 mysystem<-Sys.info()['sysname']
@@ -176,6 +176,17 @@ dim.max_subsample <- max(sampling_years)
 dim.length_rec <- length(sampling_years)+1   # The last index is for storing the full record.
 distr.name <- c("gumbel", "gamma", "gev", "gl", "pearson")
 method.name <- c("mle", "Lmom", "mom", "bayes")
+
+}
+
+
+#' create_nc
+#' @description Function to create an empty nc database for FlomKart
+#' @return
+#' @export
+#'
+#' @examples
+create_nc <- function() {
 
 ## To run if creating the nc file from scratch  --------------
 
@@ -366,6 +377,17 @@ var.put.nc(nc, "station.long", station.long)
 var.put.nc(nc, "station.lat", station.lat)
 
 sync.nc(nc)
+
+}
+
+
+#' fillup_nc
+#' @description Function to fill upthe NetCDF database
+#' @return
+#' @export
+#'
+#' @examples
+fillup_nc <- function() {
 
 ## To run if updating or creating the nc file from scratch  --------------
 
