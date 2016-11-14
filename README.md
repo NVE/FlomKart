@@ -1,5 +1,8 @@
 `Warning: This project is still under development and is not fully mature`
 
+This project has been packaged.
+Draft documentation website on [gh-pages](https://nve.github.io/FlomKart/)
+
 # FlomKart
 Flood frequency analysis for the FlomKart project. The output data of the repo is fed into the FlomKart_ShinyApp visualization tool.
 This is still work in progress!

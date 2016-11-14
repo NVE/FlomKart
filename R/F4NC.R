@@ -36,7 +36,7 @@ gof_cs <- function(dat, param, distr = "distr") {
   if (distr == 'gamma') {
     for (i in 1:nb.bins) {
       fail_safe <- failwith(NA, pgamma)
-      temp <- fail_safe(dat.breaks[i+1], param[1], param[2]) - fail_safe(dat.breaks[i], param[1], param[2])
+      temp <- fail_safe(dat.breaks[i+1], param[1], rate = param[2]) - fail_safe(dat.breaks[i], param[1], rate = param[2])
       p <- append(p, temp)
     }
   }
@@ -106,7 +106,7 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   }
 
   if (distr == 'gamma') {
-    temp <- fail_safe(dat, "pgamma", param[1], param[2])
+    temp <- fail_safe(dat, "pgamma", param[1], rate = param[2])
   }
   if (distr == 'gev') {
     temp <- fail_safe(dat, "pgev", param[1], param[2], param[3])
@@ -151,7 +151,7 @@ gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   }
 
   if (distr == 'gamma') {
-    temp <- fail_safe(dat, "pgamma", param[1], param[2])
+    temp <- fail_safe(dat, "pgamma", param[1], rate = param[2])
   }
   if (distr == 'gev') {
     temp <- fail_safe(dat, "pgev", param[1], param[2], param[3])
@@ -223,7 +223,7 @@ BS4NC <- function(dat, threshold, param, distr = "distr") {
     modelled.prob <- pgumbel(threshold, param[1], param[2])  # Could be protected with "failwith"
   }
   if(distr == 'gamma') {
-    modelled.prob <- pgamma(threshold, param[1], param[2])
+    modelled.prob <- pgamma(threshold, param[1], rate = param[2])
   }
   if(distr == 'gev') {
     modelled.prob <- evd::pgev(threshold, param[1], param[2], param[3])
@@ -259,7 +259,7 @@ invisible(BS)
 #     modelled.prob <- pgumbel(threshold, param[1], param[2])
 #   }
 #   if(distr == 'gamma') {
-#     modelled.prob <- pgamma(threshold, param[1], param[2])
+#     modelled.prob <- pgamma(threshold, param[1], rate = param[2])
 #   }
 #   if(distr == 'gev') {
 #     modelled.prob <- evd::pgev(threshold, param[1], param[2], param[3])
@@ -298,7 +298,7 @@ invisible(BS)
 #     modelled.cdf <- pgumbel(dat, param[1], param[2])  # modelled.cdf.sample?
 #   }
 #   if(distr == 'gamma') {
-#     modelled.cdf <- pgamma(dat, param[1], param[2])
+#     modelled.cdf <- pgamma(dat, param[1], rate = param[2])
 #   }
 #   if(distr == 'gev') {
 #     modelled.cdf <- evd::pgev(dat, param[1], param[2], param[3])
@@ -389,7 +389,7 @@ gof_nt <- function(dat, rperiods.nt, param, distr = "distr") {
 
   ## Calculation of the predicted quantile thresholds.
    if(distr == 'gumbel')  thresholds <- evd::qgumbel(1 - 1 / rperiods.nt, param[1], param[2])
-   if(distr == 'gamma') thresholds <- qgamma(1 - 1 / rperiods.nt, param[1], param[2])
+   if(distr == 'gamma') thresholds <- qgamma(1 - 1 / rperiods.nt, param[1], scale = 1 / param.estimate[2])
 
      if(distr == 'gev') thresholds <- evd::qgev(1 - 1 / rperiods.nt, param[1], param[2], param[3])
 
@@ -494,11 +494,11 @@ run_all_ff <- function(dat,station.nb.vect, distr = "distr", method = "method") 
 
         if (is.null(param.1) == FALSE) {
           fail_safe <- failwith(NA, pgamma)
-          ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[1], param.1$estimate[2])^length(sample.2)
+          ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[1], rate = param.1$estimate[2])^length(sample.2)
         }
         if (is.null(param.1) == FALSE) {
           fail_safe <- failwith(NA, pgamma)
-          ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[1], param.2$estimate[2])^length(sample.1)
+          ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[1], rate = param.2$estimate[2])^length(sample.1)
         }
       }
       #########################

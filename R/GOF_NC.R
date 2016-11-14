@@ -22,18 +22,13 @@
 
 ################################### BIG FUNCTION TO PARAMETRIZE
 
-
-
-
-#' fillup_gofnc
-#' @description Function to fill up the gof_nc database
+#' update_gofnc
+#' @description Function to update the nc database
 #' @return
 #' @export
 #'
 #' @examples
-fillup_gofnc <- function() {
-
-
+update_gofnc <- function() {
 
 ## To run at every update --------------
 nc <- open.nc("../output/flood_database.nc", write = FALSE)  # CHECK DIR
@@ -62,6 +57,17 @@ dim.random_runs <- var.get.nc(nc, "dim.random_runs")
 min_years_data <- var.get.nc(nc, "min_years_data")
 sampling_years <- var.get.nc(nc, "sampling_years")
 dim.max_subsample <- max(sampling_years)
+
+}
+
+
+#' create_gofnc
+#' @description Function to create an empty gof_nc database
+#' @return
+#' @export
+#'
+#' @examples
+create_gofnc <- function() {
 
 ## To run if creating the nc file from scratch  --------------
 
@@ -158,6 +164,17 @@ var.put.nc(gof_nc, "AD", AD)
 rm(AD)
 
 sync.nc(gof_nc)
+
+}
+
+
+#' fillup_gofnc
+#' @description Function to fill up the gof_nc database
+#' @return
+#' @export
+#'
+#' @examples
+fillup_gofnc <- function() {
 
 ## To run if updating or creating the nc file from scratch  --------------
 
