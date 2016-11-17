@@ -6,7 +6,7 @@
 #' @param dat
 #' @param param
 #' @param distr
-#'
+#' @importFrom dplyr failwith
 #' @return
 #' @export
 #'
