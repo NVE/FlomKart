@@ -1,5 +1,5 @@
 ---
-title: "FlomKart Documentation"
+title: "FlomKart"
 subtitle: "Functions for flood frequency analysis"
 author: ""
 copyright: ""
