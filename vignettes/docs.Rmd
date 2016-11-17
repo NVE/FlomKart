@@ -30,10 +30,13 @@ rdl <- function(x) packagedocs::rd_link(deparse(substitute(x)))
 This package is a set a functions developed with the FlomKart flood frequency analysis project at NVE.
 It allows building 2 NetCDF files: 
 - **flood_database.nc** which contains the raw flood dataset, random indexes to reconstitute sub-samples. The results are parameter sets for each probability distribution (gev, gl, pearson, gamma, gumbel) and parameter estimation method (mom, Lmom, MLE, bayes)
-- **gof.nc** which contains the goodnees of fit results based on the estimated parameters stored in `flood_database.nc`.
+- **gof.nc** which contains the goodness of fit results based on the estimated parameters stored in `flood_database.nc`.
+
+The content of those 2 NetCDF files can then be explored with the NASA's NetCDF viewer [Panoply](http://www.giss.nasa.gov/tools/panoply/)
+or by our dedicated FlomKart shiny app ([doc](http://NVE.github.io/FlomKart_ShinyApp) and [code](http://github.com/NVE/FlomKart_ShinyApp))
 
 # How was it coded?
 
-In [**Package Ref**](http://NVE.github.io/FlomKart/rd.html), you'll find the documentation of all the packaged functions.
+In [Package Ref](http://NVE.github.io/FlomKart/rd.html), you'll find the documentation of all the packaged functions.
 This package uses the parameter estimation functions of the `fitdistrib` package ([doc](http://NVE.github.io/fitdistrib) and [code](http://github.com/NVE/fitdistrib))
 
