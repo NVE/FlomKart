@@ -1,5 +1,5 @@
 ---
-title: "FlomKart Documentation"
+title: "FlomKart"
 subtitle: "Functions for flood frequency analysis"
 author: ""
 copyright: ""
@@ -29,6 +29,7 @@ rdl <- function(x) packagedocs::rd_link(deparse(substitute(x)))
 
 This package is a set a functions developed with the FlomKart flood frequency analysis project at NVE.
 It allows building 2 NetCDF files: 
+
 - **flood_database.nc** which contains the raw flood dataset, random indexes to reconstitute sub-samples. The results are parameter sets for each probability distribution (gev, gl, pearson, gamma, gumbel) and parameter estimation method (mom, Lmom, MLE, bayes)
 - **gof.nc** which contains the goodness of fit results based on the estimated parameters stored in `flood_database.nc`.
 
