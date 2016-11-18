@@ -15,9 +15,11 @@ before_install:
 
 r_packages:
 - RNetCDF
+- roxygen2
 
 r_github_packages:
 - NVE/fitdistrib
+- hafen/packagedocs
 
 env:
   global:
@@ -25,6 +27,9 @@ env:
     - GITHUB_PAT_FlomKart
 
 before_script:
+  - Rscript -e "devtools::document()"
+  - Rscript -e "devtools::install()"
+  - Rscript -e "packagedocs::build_vignettes()"
   - chmod +x ./_deploy.sh
 
 script:
