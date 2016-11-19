@@ -128,7 +128,7 @@ Work for the FlomKart project
 Imports
 </h4>
 <p>
-RNetCDF, quadprog, goftest, dplyr, magrittr, leaflet, leaflet, fitdistrib, evd, nsRFA, ismev, fitdistrplus, stats, lubridate, parallel, foreach
+RNetCDF, quadprog, goftest, tidyverse, leaflet, fitdistrib, evd, nsRFA, ismev, fitdistrplus, stats, parallel, foreach, doSNOW, doMC,
 </p>
 <h4>
 Suggests
@@ -189,7 +189,7 @@ Function to fill upthe NetCDF database
 <h4>
 Usage
 </h4>
-<pre class="r"><code><div>fillup_nc()</div></code></pre>
+<pre class="r"><code><div>fillup_nc(dat&nbsp;=&nbsp;flood_data, nc_path&nbsp;=&nbsp;"output/flood_database.nc")</div></code></pre>
 </div>
 <div id="fit_distr" class="section level2">
 <h2>fit_distr</h2>
@@ -229,17 +229,6 @@ Anderson Darling
 Usage
 </h4>
 <pre class="r"><code><div>gof_ad(dat, param, distr&nbsp;=&nbsp;"distr", test.stat&nbsp;=&nbsp;TRUE, p.value&nbsp;=&nbsp;FALSE)</div></code></pre>
-<h4>
-Arguments
-</h4>
-<dl class="rd-dl">
-<dt>
-p.value
-</dt>
-<dd class="rd-dd">
-Anderson Darling
-</dd>
-</dl>
 </div>
 <div id="gof_cs" class="section level2">
 <h2>gof_cs</h2>
