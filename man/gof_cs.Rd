@@ -6,9 +6,6 @@
 \usage{
 gof_cs(dat, param, distr = "distr")
 }
-\arguments{
-\item{distr}{}
-}
 \description{
 Chi Square calculation. Does not work well
 }

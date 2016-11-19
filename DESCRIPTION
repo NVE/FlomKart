@@ -11,9 +11,7 @@ RoxygenNote: 5.0.1
 Imports: RNetCDF,
   quadprog,
   goftest,
-  dplyr,
-  magrittr,
-  leaflet,
+  tidyverse,
   leaflet,
   fitdistrib,
   evd,
@@ -21,8 +19,9 @@ Imports: RNetCDF,
   ismev,
   fitdistrplus,
   stats,
-  lubridate,
   parallel,
-  foreach
+  foreach,
+  doSNOW,
+  doMC,
 Suggests: packagedocs
 VignetteBuilder: packagedocs

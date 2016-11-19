@@ -51,147 +51,39 @@
 
 
 
-#' update_nc
-#' @description Function to update the nc database
+#' create_empty_nc
+#'
+#' @param dat Flood data. The default is the data inculded in this package.
+#'
+#' @description Function to update the nc database. This function reads an RData file. Initial steps can be found in convert_data.R
+#'
 #' @return
 #' @export
 #'
-#' @examples
-update_nc <- function() {
+#' @examples summary(flood_data)
+#' # update_nc_structure()
+create_empty_nc <- function(dat = flood_data, meta_dat = flood_metadata) {
 
+## Defining key parameters and dimensions
 
-mysystem<-Sys.info()['sysname']
-if(mysystem == "Linux") library(doMC) # parallel backend Linux
-if(mysystem == "Windows") library(doSNOW) # parallel backend Windows
-
-# Source all the required R files
-# source('LOAD.r')      # Required to load Q into database and save station coordinates
-
-
-## To run at every update --------------
-raw_dat <- read.delim("../rawdata/AMS_table_HYDRA_endelig.txt", sep="\t", as.is=TRUE)  # CHECK DIR
-raw_dat$year <- year(raw_dat$dt_flood_daily_date)
-raw_dat$snumber <- raw_dat$regine_area * 10^5 + raw_dat$main_nr
-
-# Old data for station names only
-old_dat <- read.csv("../rawdata/AMS_table_old.csv", sep=";", as.is=TRUE)  # CHECK DIR
-
-for (i in 1:length(raw_dat$year)) {
-  if (length(which(old_dat$snumber == raw_dat$snumber[i])) > 0) {
-  raw_dat$name[i] <- old_dat$name[which(old_dat$snumber == raw_dat$snumber[i])[1]]
-  } else {
-    raw_dat$name[i] <- "NO_NAME"
-  }
-}
-
-# Get rid of the double flood values for 1 year (we take the max by setting the min to NA)
-for (i in 1:(length(raw_dat$year) - 1)) {
-  if (!is.na(raw_dat$year[i])) {
-    if (raw_dat$year[i] == raw_dat$year[i + 1] && any(is.na(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1]))) == FALSE ) {
-      min_index <- which(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1]) == min(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1])))
-      raw_dat$value_q_daily[i - 1 + min_index] <- NA
-    }
-  }
-}
-
-# Let's first get rid of any data line that has an NA flow and create the dat list
-dat <- list()
-keep <- which(!is.na(raw_dat$value_q_daily))
-
-dat$regine_area <- raw_dat$regine_area[keep]
-dat$main_nr <- raw_dat$main_nr[keep]
-dat$snumber <- raw_dat$snumber[keep]
-dat$name <- raw_dat$name[keep]
-
-dat$flom_DOGN <- raw_dat$value_q_daily[keep]
-dat$date <- raw_dat$dt_flood_daily_date[keep]
-dat$year <- raw_dat$year[keep]
-
-dat$fraction_rain <- raw_dat$fraction_rain[keep]
-
-# Making list of snumber and getting rid of stations with not enough data
-station.nb.vect.init <- na.omit(unique(dat$snumber))
-
-min_years_data <- 30  # set the minimum number of years to accept a station
-max_years_ss <-90 # The maximum record length for subsampling
-station.nb.vect <- c()
-length_rec <- c()
-
-for (i in seq(along = station.nb.vect.init)) {
-
-  length_record <- length(which(dat$snumber == station.nb.vect.init[i]))
-  if (length_record >= min_years_data) {
-    station.nb.vect <- c(station.nb.vect, station.nb.vect.init[i])
-    length_rec <- c(length_rec, length_record)
-  }
-
-}
-
-dim.station <- length(station.nb.vect)
-#station.nb.vect <- station.nb.vect[1:dim.station]
-
-
-# Read station coordinates
-utminfo <- read.table("../rawdata/Coordinates_for_R.txt",
-                      sep = "\t", header = T)  # CHECK DIR
-dat <- save_coordinates(dat, station.nb.vect)  # this function is in LOAD.R
-
-# Read catchments area
-catchment.prop <- read.csv("../rawdata/Hydra_FeltparTabell.csv", sep=";")  # CHECK DIR
-catchment.prop$COMPOUND_K <- catchment.prop$COMPOUND_K / 1000  # to get the same numbers as in the main data file
-catchment.size <- rep("NA", length(station.nb.vect))
-catchment.min.height <- rep("NA", length(station.nb.vect))
-catchment.max.height <- rep("NA", length(station.nb.vect))
-
-indexes.in.catchmentprop  <- rep("NA", length(station.nb.vect))
-
-for (i in seq(along = station.nb.vect)) {
-if (is.numeric(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))) {
-  if (as.numeric(length(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))) > 0) {
-    indexes.in.catchmentprop[i] <- which(catchment.prop$COMPOUND_K == station.nb.vect[i])[1]
-    # [1] because some snumbers occur twice in the Hydra_FeltparTabell.csv
-  }
-}
-}
-
-indexes.in.catchmentprop <- as.numeric(indexes.in.catchmentprop)
-
-catchment.size <- as.numeric(catchment.prop$AREAL_UTM3[as.numeric(indexes.in.catchmentprop)])
-catchment.min.height <- catchment.prop$HEIGHT_MIN[as.numeric(indexes.in.catchmentprop)]
-catchment.max.height <- catchment.prop$HEIGHT_MAX[as.numeric(indexes.in.catchmentprop)]
-
-################################################
-# detect number of cores for parallel computing
-ncores<-detectCores(all.tests = FALSE, logical = TRUE)
-
+dim.station <- length(meta_dat$station.nb.vect)
 dim.distr <- 5
 dim.method <- 4
 dim.param <- 3
 dim.length_total_record <- 150
-# dim.length_rec <- 30   # This means that we will do subsampling for i1=30,i2=35,.....i23=140 years of record.
+dim.length_rec <- 13   # This means that we will do subsampling for i1=30,i2=35,.....i13=90 years of record.
 dim.random_runs <- 50
 dim.characters <- 64
-sampling_years <- seq(min_years_data, 5 * trunc(max_years_ss / 5), 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
-dim.max_subsample <- max(sampling_years)
-dim.length_rec <- length(sampling_years)+1   # The last index is for storing the full record.
+sampling_years <- seq(meta_dat$min_years_data, 90, 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
+dim.max_subsample <- max(meta_dat$sampling_years)
+dim.length_rec <- length(meta_dat$sampling_years) + 1   # The last index is for storing the full record.
 distr.name <- c("gumbel", "gamma", "gev", "gl", "pearson")
 method.name <- c("mle", "Lmom", "mom", "bayes")
 
-}
-
-
-#' create_nc
-#' @description Function to create an empty nc database for FlomKart
-#' @return
-#' @export
-#'
-#' @examples
-create_nc <- function() {
-
-## To run if creating the nc file from scratch  --------------
+## Create an empty NC file with the parameters defined above
 
 # Creation of the CDF dataset and definition of the dimensions
-nc <- create.nc("../output/flood_database.nc")  # CHECK DIR
+nc <- create.nc("output/flood_database.nc")  # CHECK DIR
 att.put.nc(nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis results")
 att.put.nc(nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
@@ -202,7 +94,6 @@ station.long <- rep(-9999, dim.station)
 station.lat <- rep(-9999, dim.station)
 station.lat <- rep(-9999, dim.station)
 station.length_rec <- length_rec
-
 
 Q <- array(NA,dim=c(dim.station, dim.length_total_record))
 years <- array(NA,dim=c(dim.station, dim.length_total_record))
@@ -365,19 +256,6 @@ rm(param.se)
 
 sync.nc(nc)  # Save what we've done so far
 
-# To run if the input data part of the NC file  is not yet defined----------------------------------------------
-
-nc <- open.nc("../output/flood_database.nc", write = TRUE)  # Put FALSE for read-only  # CHECK DIR
-
-var.put.nc(nc, "Q", Q)
-var.put.nc(nc, "station.name", station.name)
-var.put.nc(nc, "station.utmN", station.utmN)
-var.put.nc(nc, "station.utmE", station.utmE)
-var.put.nc(nc, "station.long", station.long)
-var.put.nc(nc, "station.lat", station.lat)
-
-sync.nc(nc)
-
 }
 
 
@@ -385,17 +263,28 @@ sync.nc(nc)
 #' @description Function to fill upthe NetCDF database
 #' @return
 #' @export
-#'
+#' @import doMC
+#' @import doSNOW
 #' @examples
-fillup_nc <- function() {
+fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
 
 ## To run if updating or creating the nc file from scratch  --------------
 
-nc <- open.nc("../output/flood_database.nc", write = TRUE)  # Put FALSE for read-only  # CHECK DIR
+nc <- open.nc(nc_path, write = TRUE)  # Put FALSE for read-only  # CHECK DIR
 Q <- var.get.nc(nc, "Q")
 
 # Dumping all console output into errorlog.txt
-sink("../output/errorlog.txt")  # CHECK DIR
+sink("output/errorlog.txt")  # CHECK DIR
+
+
+## Stuff for paralell computing
+
+mysystem<-Sys.info()['sysname']
+if(mysystem == "Linux") library(doMC) # parallel backend Linux
+if(mysystem == "Windows") library(doSNOW) # parallel backend Windows
+
+# detect number of cores for parallel computing
+ncores<-detectCores(all.tests = FALSE, logical = TRUE)
 
 if(mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
 if(mysystem=="Linux") registerDoMC(ncores-15) # for starting the parallel calculations
@@ -403,6 +292,8 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
 # out.temp<-foreach(st=1:10,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here
   out.temp<-foreach(st=1:length(station.nb.vect),.packages='fitdistrib') %dopar% {
+
+
 
 # for (st in seq(along = station.nb.vect)) {
 # for (st in 1:5) {

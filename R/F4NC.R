@@ -136,7 +136,7 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
 #' @param distr
 #' @param test.stat
 #' @param p.value
-#'
+#' @importFrom goftest ad.test
 #' @return
 #' @export
 #'
