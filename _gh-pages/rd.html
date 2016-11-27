@@ -6,7 +6,7 @@
 
   
   
-  <title>FlomKart Documentation</title>
+  <title>FlomKart</title>
 
     <script src="rd_files/jquery-1.11.3/jquery.min.js"></script>
   <link href="rd_files/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet" />
@@ -45,7 +45,7 @@
           <span class="icon-bar"></span>
         </button>
                 <a href="index.html" class="navbar-brand page-scroll">
-        FlomKart Documentation - Functions for flood frequency analysis
+        FlomKart - Functions for flood frequency analysis
         </a>
       </div>
             <nav class="collapse navbar-collapse" role="navigation">
@@ -55,6 +55,9 @@
 </li>
 <li class="active">
 <a href='rd.html'>Package Ref</a>
+</li>
+<li>
+<a href='https://github.com/NVE/FlomKart'>Github <i class='fa fa-github'></i></a>
 </li>
         </ul>
       </nav>
@@ -125,13 +128,13 @@ Work for the FlomKart project
 Imports
 </h4>
 <p>
-RNetCDF, quadprog, goftest, plyr, magrittr, leaflet, fitdistrib, lubridate, parallel, foreach
+RNetCDF, quadprog, goftest, tidyverse, leaflet, fitdistrib, evd, nsRFA, ismev, fitdistrplus, stats, parallel, foreach, doSNOW
 </p>
 <h4>
 Suggests
 </h4>
 <p>
-packagedocs
+doMC, packagedocs
 </p>
 <div id="package-functions" class="section level1">
 <h1>Package Functions</h1>
@@ -181,12 +184,12 @@ Usage
 fillup_nc
 </h3>
 <p class="rd-p">
-Function to fill up the nc database
+Function to fill upthe NetCDF database
 </p>
 <h4>
 Usage
 </h4>
-<pre class="r"><code><div>fillup_nc()</div></code></pre>
+<pre class="r"><code><div>fillup_nc(dat&nbsp;=&nbsp;flood_data, nc_path&nbsp;=&nbsp;"output/flood_database.nc")</div></code></pre>
 </div>
 <div id="fit_distr" class="section level2">
 <h2>fit_distr</h2>
@@ -226,17 +229,6 @@ Anderson Darling
 Usage
 </h4>
 <pre class="r"><code><div>gof_ad(dat, param, distr&nbsp;=&nbsp;"distr", test.stat&nbsp;=&nbsp;TRUE, p.value&nbsp;=&nbsp;FALSE)</div></code></pre>
-<h4>
-Arguments
-</h4>
-<dl class="rd-dl">
-<dt>
-p.value
-</dt>
-<dd class="rd-dd">
-Anderson Darling
-</dd>
-</dl>
 </div>
 <div id="gof_cs" class="section level2">
 <h2>gof_cs</h2>
@@ -251,17 +243,6 @@ Chi Square calculation. Does not work well
 Usage
 </h4>
 <pre class="r"><code><div>gof_cs(dat, param, distr&nbsp;=&nbsp;"distr")</div></code></pre>
-<h4>
-Arguments
-</h4>
-<dl class="rd-dl">
-<dt>
-distr
-</dt>
-<dd class="rd-dd">
-Chi Square calculation. Does not work well
-</dd>
-</dl>
 </div>
 <div id="gof_ks" class="section level2">
 <h2>gof_ks</h2>

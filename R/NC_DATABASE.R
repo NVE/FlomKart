@@ -55,7 +55,7 @@
 #'
 #' @param dat Flood data. The default is the data inculded in this package.
 #'
-#' @description Function to update the nc database. This function reads an RData file. Initial steps can be found in convert_data.R
+#' @description Function to create the structure of the NetCDF file.
 #'
 #' @return
 #' @export
@@ -263,7 +263,6 @@ sync.nc(nc)  # Save what we've done so far
 #' @description Function to fill upthe NetCDF database
 #' @return
 #' @export
-#' @import doMC
 #' @import doSNOW
 #' @examples
 fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
@@ -280,14 +279,14 @@ sink("output/errorlog.txt")  # CHECK DIR
 ## Stuff for paralell computing
 
 mysystem<-Sys.info()['sysname']
-if(mysystem == "Linux") library(doMC) # parallel backend Linux
+# if(mysystem == "Linux") library(doMC) # parallel backend Linux
 if(mysystem == "Windows") library(doSNOW) # parallel backend Windows
 
 # detect number of cores for parallel computing
 ncores<-detectCores(all.tests = FALSE, logical = TRUE)
 
 if(mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
-if(mysystem=="Linux") registerDoMC(ncores-15) # for starting the parallel calculations
+# if(mysystem=="Linux") registerDoMC(ncores-15) # for starting the parallel calculations
 if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
 # out.temp<-foreach(st=1:10,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here

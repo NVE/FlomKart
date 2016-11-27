@@ -10,7 +10,7 @@ create_empty_nc(dat = flood_data, meta_dat = flood_metadata)
 \item{dat}{Flood data. The default is the data inculded in this package.}
 }
 \description{
-Function to update the nc database. This function reads an RData file. Initial steps can be found in convert_data.R
+Function to create the structure of the NetCDF file.
 }
 \examples{
 summary(flood_data)
