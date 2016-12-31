@@ -63,11 +63,11 @@
 #'
 #' @examples summary(flood_data)
 #' # update_nc_structure()
-create_empty_nc <- function(dat = postproc_dat, meta_dat = flood_metadata) {
+create_empty_nc <- function(dat = flood_data, meta_dat = flood_metadata) {
 
 ## Defining key parameters and dimensions
 
-dim.station <- length(meta_dat$station.nb.vect)
+dim.station <- length(meta_dat$regine_main)
 dim.distr <- 5
 dim.method <- 4
 dim.param <- 3
@@ -75,7 +75,7 @@ dim.length_total_record <- 150
 dim.length_rec <- 13   # This means that we will do subsampling for i1=30,i2=35,.....i13=90 years of record.
 dim.random_runs <- 50
 dim.characters <- 64
-sampling_years <- seq(meta_dat$min_years_data, 90, 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
+sampling_years <- seq(30, 90, 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
 dim.max_subsample <- max(sampling_years)
 dim.length_rec <- length(sampling_years) + 1   # The last index is for storing the full record.
 distr.name <- c("gumbel", "gamma", "gev", "gl", "pearson")
@@ -88,34 +88,26 @@ nc <- create.nc("output/flood_database.nc")  # CHECK DIR
 att.put.nc(nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis results")
 att.put.nc(nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
-station.name <- rep("NA", dim.station)
-station.utmN <- rep(-9999, dim.station)
-station.utmE <- rep(-9999, dim.station)
-station.long <- rep(-9999, dim.station)
-station.lat <- rep(-9999, dim.station)
-station.lat <- rep(-9999, dim.station)
-station.length_rec <- length_rec
+station.name <- meta_dat$station_name
+# station.utmN <- meta_dat$station_name
+# station.utmE <- meta_dat$station_name
+station.long <- meta_dat$longitude
+station.lat <- meta_dat$latitude
 
 Q <- array(NA,dim=c(dim.station, dim.length_total_record))
 years <- array(NA,dim=c(dim.station, dim.length_total_record))
 dates <- array(NA,dim=c(dim.station, dim.length_total_record))
 
 # Loop over the stations to fill variables: Q, station.name
-for (i in seq(along = station.nb.vect)) {
+for (i in seq(along = meta_dat$regine_main)) {
 
-  indexes <- which(dat$snumber == station.nb.vect[i])
+  indexes <- which(dat$regine_main == meta_dat$regine_main[i])
 
   # Matrices
-  Q[i, 1:length_rec[i]] <- dat$flom_DOGN[indexes]
-  years[i, 1:length_rec[i]] <- dat$year[indexes]
-  dates[i, 1:length_rec[i]] <- dat$date[indexes]
+  Q[i, 1:meta_dat$record_length[i]] <- dat$flom_DOGN[indexes]
+  years[i, 1:meta_dat$record_length[i]] <- dat$year[indexes]
+  dates[i, 1:meta_dat$record_length[i]] <- dat$date[indexes]
 
-  # Vectors
-  station.name[i] <-  as.character(unique(dat$name[indexes]))
-  station.utmN[i] <- unique(dat$utmN[indexes])
-  station.utmE[i] <-  unique(dat$utmE[indexes])
-  station.long[i] <-  unique(dat$long[indexes])
-  station.lat[i] <-  unique(dat$lat[indexes])
 }
 
 random_indexes <- array(NA, dim = c(dim.station, dim.random_runs, length(sampling_years), dim.max_subsample))
@@ -130,7 +122,7 @@ dim.def.nc(nc, "random_runs", dim.random_runs)
 dim.def.nc(nc, "max_string_length", dim.characters)
 dim.def.nc(nc, "subsampling", length(sampling_years))
 dim.def.nc(nc, "max_subsample", dim.max_subsample)
-dim.def.nc(nc, "scalars", 1)
+# dim.def.nc(nc, "scalars", 1)
 # sync.nc(nc)
 
 # Definition of the variables and which dimension they are linked to
@@ -170,20 +162,21 @@ att.put.nc(nc, "method.name", "long_name", "NC_CHAR", "Estimation methods used: 
 var.put.nc(nc, "method.name", method.name)
 sync.nc(nc)
 
-var.def.nc(nc,  varname = "station.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
-att.put.nc(nc, "station.name", "missing_value", "NC_CHAR", "NA")
-var.put.nc(nc, "station.name", station.name)
-sync.nc(nc)
+## TEMP: we need to get the names back but we need to deal with the special characters.
+# var.def.nc(nc,  varname = "station.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
+# att.put.nc(nc, "station.name", "missing_value", "NC_CHAR", "NA")
+# var.put.nc(nc, "station.name", station.name)
+# sync.nc(nc)
 
-var.def.nc(nc,  varname = "station.utmN", vartype = "NC_INT", dimensions = "station")
-att.put.nc(nc, "station.utmN", "missing_value", "NC_INT", -9999)
-var.put.nc(nc, "station.utmN", station.utmN)
-sync.nc(nc)
+# var.def.nc(nc,  varname = "station.utmN", vartype = "NC_INT", dimensions = "station")
+# att.put.nc(nc, "station.utmN", "missing_value", "NC_INT", -9999)
+# var.put.nc(nc, "station.utmN", station.utmN)
+# sync.nc(nc)
 
-var.def.nc(nc,  varname = "station.utmE", vartype = "NC_INT", dimensions = "station")
-att.put.nc(nc, "station.utmE", "missing_value", "NC_INT", -9999)
-var.put.nc(nc, "station.utmE", station.utmE)
-sync.nc(nc)
+# var.def.nc(nc,  varname = "station.utmE", vartype = "NC_INT", dimensions = "station")
+# att.put.nc(nc, "station.utmE", "missing_value", "NC_INT", -9999)
+# var.put.nc(nc, "station.utmE", station.utmE)
+# sync.nc(nc)
 
 var.def.nc(nc,  varname = "station.long", vartype = "NC_FLOAT", dimensions = "station")
 att.put.nc(nc, "station.long", "missing_value", "NC_FLOAT", -9999)
@@ -193,21 +186,21 @@ var.def.nc(nc,  varname = "station.lat", vartype = "NC_FLOAT", dimensions = "sta
 att.put.nc(nc, "station.lat", "missing_value", "NC_FLOAT", -9999)
 var.put.nc(nc, "station.lat", station.lat)
 
-var.def.nc(nc,  varname = "station.number", vartype = "NC_INT", dimensions = "station")
-att.put.nc(nc, "station.number", "missing_value", "NC_INT", -9999)
-var.put.nc(nc, "station.number", station.nb.vect)
+var.def.nc(nc,  varname = "station.number", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))  ## Used to be an NC_INT with 1 dimension
+att.put.nc(nc, "station.number", "missing_value", "NC_CHAR", "NA")
+var.put.nc(nc, "station.number", meta_dat$regine_main)
 
-var.def.nc(nc, varname = "catchment.size", vartype = "NC_FLOAT", dimensions = "station")
-att.put.nc(nc, "catchment.size", "missing_value", "NC_FLOAT", "NA")
-var.put.nc(nc, "catchment.size", catchment.size)
-
-var.def.nc(nc, varname = "catchment.min.height", vartype = "NC_FLOAT", dimensions = "station")
-att.put.nc(nc, "catchment.min.height", "missing_value", "NC_CHAR", "NA")
-var.put.nc(nc, "catchment.min.height", catchment.min.height)
-
-var.def.nc(nc, varname = "catchment.max.height", vartype = "NC_FLOAT", dimensions = "station")
-att.put.nc(nc, "catchment.max.height", "missing_value", "NC_CHAR", "NA")
-var.put.nc(nc, "catchment.max.height", catchment.max.height)
+# var.def.nc(nc, varname = "catchment.size", vartype = "NC_FLOAT", dimensions = "station")
+# att.put.nc(nc, "catchment.size", "missing_value", "NC_FLOAT", "NA")
+# var.put.nc(nc, "catchment.size", catchment.size)
+#
+# var.def.nc(nc, varname = "catchment.min.height", vartype = "NC_FLOAT", dimensions = "station")
+# att.put.nc(nc, "catchment.min.height", "missing_value", "NC_CHAR", "NA")
+# var.put.nc(nc, "catchment.min.height", catchment.min.height)
+#
+# var.def.nc(nc, varname = "catchment.max.height", vartype = "NC_FLOAT", dimensions = "station")
+# att.put.nc(nc, "catchment.max.height", "missing_value", "NC_CHAR", "NA")
+# var.put.nc(nc, "catchment.max.height", catchment.max.height)
 sync.nc(nc)
 
 # Saving parameters that will be used in creating the fitting data
@@ -292,11 +285,11 @@ if(mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
 if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
 # out.temp<-foreach(st=1:10,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here
-  out.temp<-foreach(st=1:length(station.nb.vect),.packages='fitdistrib') %dopar% {
+  out.temp<-foreach(st=1:length(meta_dat$regine_main),.packages='fitdistrib') %dopar% {
 
 
 
-# for (st in seq(along = station.nb.vect)) {
+# for (st in seq(along = meta_dat$regine_main)) {
 # for (st in 1:5) {
   print(st)
 
@@ -311,7 +304,7 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
   temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), dim.max_subsample))
   if (length(temp.Q) <  min_years_data) {
     print("This station number has NULL or not enough data")
-    print(station.nb.vect[st])
+    print(meta_dat$regine_main[st])
     next(st)
   } else {
 
@@ -384,7 +377,7 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
 } # dopar
 # Write the output from all paralell calculations to the NetCDF file.
 # Maybe later this might be improved by letting each paralell loop write to the same NetCDF file.
-for(st in 1 : length(station.nb.vect)){
+for(st in 1 : length(meta_dat$regine_main)){
           var.put.nc(nc, "param.estimate", data = out.temp[[st]][[1]], start=c(st, 1, 1, 1, 1, 1),
                      count=c(1, dim.distr, dim.method, dim.param,dim.length_rec, dim.random_runs))
           var.put.nc(nc, "param.se", data = out.temp[[st]][[2]], start=c(st, 1, 1, 1, 1, 1),
