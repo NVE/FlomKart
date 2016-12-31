@@ -58,11 +58,12 @@
 #' @description Function to create the structure of the NetCDF file.
 #'
 #' @return
+#' @importFrom RNetCDF create.nc att.put.nc dim.def.nc var.def.nc var.put.nc sync.nc
 #' @export
 #'
 #' @examples summary(flood_data)
 #' # update_nc_structure()
-create_empty_nc <- function(dat = flood_data, meta_dat = flood_metadata) {
+create_empty_nc <- function(dat = postproc_dat, meta_dat = flood_metadata) {
 
 ## Defining key parameters and dimensions
 
@@ -75,8 +76,8 @@ dim.length_rec <- 13   # This means that we will do subsampling for i1=30,i2=35,
 dim.random_runs <- 50
 dim.characters <- 64
 sampling_years <- seq(meta_dat$min_years_data, 90, 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
-dim.max_subsample <- max(meta_dat$sampling_years)
-dim.length_rec <- length(meta_dat$sampling_years) + 1   # The last index is for storing the full record.
+dim.max_subsample <- max(sampling_years)
+dim.length_rec <- length(sampling_years) + 1   # The last index is for storing the full record.
 distr.name <- c("gumbel", "gamma", "gev", "gl", "pearson")
 method.name <- c("mle", "Lmom", "mom", "bayes")
 
@@ -130,7 +131,7 @@ dim.def.nc(nc, "max_string_length", dim.characters)
 dim.def.nc(nc, "subsampling", length(sampling_years))
 dim.def.nc(nc, "max_subsample", dim.max_subsample)
 dim.def.nc(nc, "scalars", 1)
-sync.nc(nc)
+# sync.nc(nc)
 
 # Definition of the variables and which dimension they are linked to
 # Input data
@@ -264,6 +265,7 @@ sync.nc(nc)  # Save what we've done so far
 #' @return
 #' @export
 #' @import doSNOW
+#' @importFrom RNetCDF open.nc var.get.nc close.nc
 #' @examples
 fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
 

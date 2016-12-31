@@ -17,8 +17,13 @@ save(postproc_dat, file = "data/flood_data.RData")
 # source('LOAD.r')      # Required to load Q into database and save station coordinates
 
 
+#################################################################################################################
+#################################################################################################################
+
+# CLARIFY THIS raw_dat thing!!
+
 # Old data for station names only
-old_dat <- read.csv("../rawdata/AMS_table_old.csv", sep=";", as.is=TRUE)  # CHECK DIR
+old_dat <- read.csv("rawdata/AMS_table_old.csv", sep=";", as.is=TRUE)  # CHECK DIR
 
 for (i in 1:length(raw_dat$year)) {
   if (length(which(old_dat$snumber == raw_dat$snumber[i])) > 0) {
@@ -53,6 +58,10 @@ dat$year <- raw_dat$year[keep]
 
 dat$fraction_rain <- raw_dat$fraction_rain[keep]
 
+#################################################################################################################
+#################################################################################################################
+
+
 # Making list of snumber and getting rid of stations with not enough data
 station.nb.vect.init <- na.omit(unique(dat$snumber))
 
@@ -72,16 +81,19 @@ for (i in seq(along = station.nb.vect.init)) {
 }
 
 ## !!! Station number vector to put into the metadata file
-
+flood_metadata <- list()
+flood_metadata$station.nb.vect <- station.nb.vect
+flood_metadata$min_years_data <- 30
+save(flood_metadata, file = "data/flood_metadata.RData")
 
 
 # Read station coordinates
-utminfo <- read.table("../rawdata/Coordinates_for_R.txt",
+utminfo <- read.table("rawdata/Coordinates_for_R.txt",
                       sep = "\t", header = T)  # CHECK DIR
 dat <- save_coordinates(dat, station.nb.vect)  # this function is in LOAD.R
 
 # Read catchments area
-catchment.prop <- read.csv("../rawdata/Hydra_FeltparTabell.csv", sep=";")  # CHECK DIR
+catchment.prop <- read.csv("rawdata/Hydra_FeltparTabell.csv", sep=";")  # CHECK DIR
 catchment.prop$COMPOUND_K <- catchment.prop$COMPOUND_K / 1000  # to get the same numbers as in the main data file
 catchment.size <- rep("NA", length(station.nb.vect))
 catchment.min.height <- rep("NA", length(station.nb.vect))
