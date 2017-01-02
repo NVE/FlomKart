@@ -291,7 +291,7 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
 
 # for (st in seq(along = meta_dat$regine_main)) {
 # for (st in 1:5) {
-  print(st)
+  # print(st)
 
 # Need to store results from each parallel chain in temporary arrays
   par.param.estimate <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
