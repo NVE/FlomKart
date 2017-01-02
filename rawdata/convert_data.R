@@ -5,13 +5,16 @@ save(dat, file = "data/preprocessed_flood_data.RData")
 library(lubridate)
 date_vect <- ymd(dat$daily_ams_dates)
 regine_main <- paste(flood_data$regine,".",flood_data$main, sep = "")
+station_number <- dat$regine * 10^8 + dat$main * 10^3
 
-flood_data <- data.frame(regine = dat$regine, main = dat$main,
+flood_data <- data.frame(regine = dat$regine,
+                         main = dat$main,
                          regine_main = regine_main,
+                         station_number = station_number,
                          date = dat$daily_ams_dates,
-                           year = year(date_vect), month = month(date_vect), day = day(date_vect),
-                          flom_DOGN = dat$daily_ams.1,
-                           fgp = dat$FGP)  # Flood generating processes
+                         year = year(date_vect), month = month(date_vect), day = day(date_vect),
+                         flom_DOGN = dat$daily_ams.1,
+                         fgp = dat$FGP)  # Flood generating processes
 
 save(flood_data, file = "data/flood_data.RData")
 
@@ -21,6 +24,7 @@ save(flood_data, file = "data/flood_data.RData")
 load("rawdata/NVEDATA_meta_data.RData")  ## This creates the "meta_data" variable
 
 individual_stations <- unique(flood_data$regine_main)
+individual_stations_number <- unique(flood_data$station_number)
 
 record_length <- c()
 # Starting with a data frame that has all the collumn names of the NVEDATA dataset but our list of stations
@@ -38,8 +42,9 @@ flood_metadata[i, ] <- meta_data[which(meta_data$regine_main == individual_stati
 
 }
 
-# We add the entire length of record vector to the dataframe
-flood_metadata <- cbind(flood_metadata, record_length)
+# We add the entire length of record and station_number vectors to the dataframe
+flood_metadata["record_length"] <-  record_length
+flood_metadata["station_number"] <-  individual_stations_number
 
 # Let's only take stations that have more than 30 years of record. (This could be later parametrized in the NC_DATABASE functions)
 flood_metadata <- subset(flood_metadata, flood_metadata$record_length >= 30)
@@ -56,7 +61,7 @@ save(flood_metadata, file = "data/flood_metadata.RData")
 #################################################################################################################
 #################################################################################################################
 
-# CLARIFY THIS raw_dat thing!!
+# THE STUFF BELOW SHOULD NOT BE USEFUL ANYMORE
 
 # Old data for station names only
 old_dat <- read.csv("rawdata/AMS_table_old.csv", sep=";", as.is=TRUE)  # CHECK DIR

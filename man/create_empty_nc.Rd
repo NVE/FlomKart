@@ -4,7 +4,8 @@
 \alias{create_empty_nc}
 \title{create_empty_nc}
 \usage{
-create_empty_nc(dat = flood_data, meta_dat = flood_metadata)
+create_empty_nc(dat = flood_data, meta_dat = flood_metadata,
+  min_years_data = 30)
 }
 \arguments{
 \item{dat}{Flood data. The default is the data inculded in this package.}

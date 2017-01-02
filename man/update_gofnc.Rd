@@ -4,7 +4,7 @@
 \alias{update_gofnc}
 \title{update_gofnc}
 \usage{
-update_gofnc()
+update_gofnc(flood_database.nc_path = "output/flood_database.nc")
 }
 \description{
 Function to update the nc database

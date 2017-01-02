@@ -28,10 +28,10 @@
 #' @export
 #'
 #' @examples
-update_gofnc <- function() {
+update_gofnc <- function(flood_database.nc_path = "output/flood_database.nc") {
 
 ## To run at every update --------------
-nc <- open.nc("../output/flood_database.nc", write = FALSE)  # CHECK DIR
+nc <- open.nc(paste(flood_database.nc_path), write = FALSE)  # CHECK DIR
 # READ ONLY: we want to load all pre-existing dimensions, parameters and data
 
 # New dimensions
@@ -61,17 +61,48 @@ dim.max_subsample <- max(sampling_years)
 }
 
 
-#' create_gofnc
+#' create_empty_gofnc
 #' @description Function to create an empty gof_nc database
 #' @return
 #' @export
 #'
 #' @examples
-create_gofnc <- function() {
+create_empty_gofnc <- function(flood_database.nc_path = "output/flood_database.nc") {
 
-## To run if creating the nc file from scratch  --------------
+  ## To run if creating the nc file from scratch  --------------
+  # Get important data and parameters from the already compiled flood_database.nc
 
-gof_nc <- create.nc("../output/gof.nc")
+  nc <- open.nc(paste(flood_database.nc_path), write = FALSE)
+  # READ ONLY: we want to load all pre-existing dimensions, parameters and data
+
+  # New dimensions
+  dim.r_periods <- 6  # This is new to GOF (wasn't in NC_DATABASE)
+  return.periods <- c(10, 20, 50, 100, 200, 500)  # This is new to GOF (wasn't in NC_DATABASE)
+  rperiods.bs <- c(2,5,10,15,20,30)  # return periods for the Brier score
+  dim.few_quantiles <- 7  # min/max/q25%/q50%/Q75%/mean/sd
+
+  # Create a vector with all the different station numbers, in order to run every station separately in one go
+  station.nb.vect <- var.get.nc(nc, "station.number")
+  dim.station <- length(station.nb.vect)
+
+  distr.name <- var.get.nc(nc, "distr.name")
+  method.name <- var.get.nc(nc, "method.name")
+  dim.distr <- length(distr.name)
+  dim.method <- length(method.name)
+  dim.length_rec <- var.get.nc(nc, "dim.length_rec")
+
+  dim.param <- 3
+  dim.characters <- 64
+
+  dim.random_runs <- var.get.nc(nc, "dim.random_runs")
+  min_years_data <- var.get.nc(nc, "min_years_data")
+  sampling_years <- var.get.nc(nc, "sampling_years")
+  dim.max_subsample <- max(sampling_years)
+
+
+# Now we create the gof.nc files, define dimensions and start filling it with empty data
+
+gof_nc <- create.nc("output/gof.nc")
 att.put.nc(gof_nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis results")
 att.put.nc(gof_nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
@@ -117,6 +148,7 @@ att.put.nc(gof_nc, "r.levels", "missing_value", "NC_FLOAT", -9999)
 att.put.nc(gof_nc, "r.levels", "short_name", "NC_CHAR", "Return levels (m3/s) for different return periods")
 att.put.nc(gof_nc, "r.levels", "long_name", "NC_CHAR",
            "The selected return periods for those return levels are: 10, 20, 50, 100, 200 and 500 years")
+
 r.levels <- array(NA,dim=c(dim.station, dim.distr, dim.method, dim.length_rec, dim.few_quantiles, dim.r_periods))
 var.put.nc(gof_nc, "r.levels", r.levels)
 rm(r.levels)
@@ -124,6 +156,7 @@ rm(r.levels)
 var.def.nc(gof_nc, varname = "QS", vartype = "NC_FLOAT",
            dimensions = c("station", "distr", "method", "length.rec", "few_quantiles", "r.periods"))
 att.put.nc(gof_nc, "QS", "missing_value", "NC_FLOAT", -9999)
+
 QS <- array(NA,dim = c(dim.station, dim.distr, dim.method, dim.length_rec, dim.few_quantiles, dim.r_periods))
 var.put.nc(gof_nc, "QS", QS)
 rm(QS)
@@ -131,6 +164,7 @@ rm(QS)
 var.def.nc(gof_nc, varname = "BS", vartype = "NC_FLOAT",
            dimensions = c("station", "distr", "method", "length.rec", "few_quantiles", "r.periods"))
 att.put.nc(gof_nc, "BS", "missing_value", "NC_FLOAT", -9999)
+
 BS <- array(NA,dim = c(dim.station, dim.distr, dim.method, dim.length_rec, dim.few_quantiles, dim.r_periods))
 var.put.nc(gof_nc, "BS", BS)
 rm(BS)
@@ -145,6 +179,7 @@ rm(BS)
 var.def.nc(gof_nc, varname = "CS", vartype = "NC_FLOAT",
            dimensions = c("station", "distr", "method", "length.rec", "few_quantiles"))
 att.put.nc(gof_nc, "CS", "missing_value", "NC_FLOAT", -9999)
+
 CS <- array(NA,dim=c(dim.station, dim.distr, dim.method, dim.length_rec, dim.few_quantiles))
 var.put.nc(gof_nc, "CS", CS)
 rm(CS)
@@ -152,6 +187,7 @@ rm(CS)
 var.def.nc(gof_nc, varname = "KS", vartype = "NC_FLOAT",
            dimensions = c("station", "distr", "method", "length.rec", "few_quantiles"))
 att.put.nc(gof_nc, "KS", "missing_value", "NC_FLOAT", -9999)
+
 KS <- array(NA,dim=c(dim.station, dim.distr, dim.method, dim.length_rec, dim.few_quantiles))
 var.put.nc(gof_nc, "KS", KS)
 rm(KS)
@@ -159,6 +195,7 @@ rm(KS)
 var.def.nc(gof_nc, varname = "AD", vartype = "NC_FLOAT",
            dimensions = c("station", "distr", "method", "length.rec", "few_quantiles"))
 att.put.nc(gof_nc, "AD", "missing_value", "NC_FLOAT", -9999)
+
 AD <- array(NA,dim=c(dim.station, dim.distr, dim.method, dim.length_rec, dim.few_quantiles))
 var.put.nc(gof_nc, "AD", AD)
 rm(AD)
@@ -178,12 +215,12 @@ fillup_gofnc <- function() {
 
 ## To run if updating or creating the nc file from scratch  --------------
 
-nc <- open.nc("../output/flood_database.nc", write = FALSE)  # Put FALSE for read-only  # CHECK DIR
-gof_nc <- open.nc("../output/gof.nc", write = TRUE)  # Put FALSE for read-only  # CHECK DIR
+nc <- open.nc("output/flood_database.nc", write = FALSE)
+gof_nc <- open.nc("output/gof.nc", write = TRUE)  # Put FALSE for read-only
 Q <- var.get.nc(nc, "Q")
 
 # Dumping all console output into errorlog.txt
-sink("../output/errorlog_gofnc.txt")  # CHECK DIR
+sink("output/errorlog_gofnc.txt")
 
 # for (st in seq(along = station.nb.vect)) {
 for (st in 1:5) {

@@ -63,7 +63,10 @@
 #'
 #' @examples summary(flood_data)
 #' # update_nc_structure()
-create_empty_nc <- function(dat = flood_data, meta_dat = flood_metadata) {
+create_empty_nc <- function(dat = flood_data, meta_dat = flood_metadata, min_years_data = 30) {
+
+# Let's only take stations that have more than 30 years of record. (This could be later parametrized in the NC_DATABASE functions)
+meta_dat <- subset(meta_dat, meta_dat$record_length >= min_years_data)
 
 ## Defining key parameters and dimensions
 
@@ -186,9 +189,10 @@ var.def.nc(nc,  varname = "station.lat", vartype = "NC_FLOAT", dimensions = "sta
 att.put.nc(nc, "station.lat", "missing_value", "NC_FLOAT", -9999)
 var.put.nc(nc, "station.lat", station.lat)
 
-var.def.nc(nc,  varname = "station.number", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))  ## Used to be an NC_INT with 1 dimension
-att.put.nc(nc, "station.number", "missing_value", "NC_CHAR", "NA")
-var.put.nc(nc, "station.number", meta_dat$regine_main)
+# Station numbers are integers, but we use float because thez are too big
+var.def.nc(nc,  varname = "station.number", vartype = "NC_FLOAT", dimensions = "station")
+att.put.nc(nc, "station.number", "missing_value", "NC_FLOAT", -9999)
+var.put.nc(nc, "station.number", meta_dat$station_number)
 
 # var.def.nc(nc, varname = "catchment.size", vartype = "NC_FLOAT", dimensions = "station")
 # att.put.nc(nc, "catchment.size", "missing_value", "NC_FLOAT", "NA")
@@ -258,6 +262,7 @@ sync.nc(nc)  # Save what we've done so far
 #' @return
 #' @export
 #' @import doSNOW
+#' @importFrom parallel detectCores
 #' @importFrom RNetCDF open.nc var.get.nc close.nc
 #' @examples
 fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
@@ -267,6 +272,21 @@ fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
 nc <- open.nc(nc_path, write = TRUE)  # Put FALSE for read-only  # CHECK DIR
 Q <- var.get.nc(nc, "Q")
 
+# Getting dimensional data from the empty database (TO TIDY UP)
+distr.name <- var.get.nc(nc, "distr.name")
+method.name <- var.get.nc(nc, "method.name")
+dim.distr <- length(distr.name)
+dim.method <- length(method.name)
+dim.length_rec <- var.get.nc(nc, "dim.length_rec")
+
+dim.param <- 3
+dim.characters <- 64
+
+dim.random_runs <- var.get.nc(nc, "dim.random_runs")
+min_years_data <- var.get.nc(nc, "min_years_data")
+sampling_years <- var.get.nc(nc, "sampling_years")
+dim.max_subsample <- max(sampling_years)
+
 # Dumping all console output into errorlog.txt
 sink("output/errorlog.txt")  # CHECK DIR
 
@@ -275,23 +295,25 @@ sink("output/errorlog.txt")  # CHECK DIR
 
 mysystem<-Sys.info()['sysname']
 # if(mysystem == "Linux") library(doMC) # parallel backend Linux
-if(mysystem == "Windows") library(doSNOW) # parallel backend Windows
+if (mysystem == "Windows") library(doSNOW) # parallel backend Windows
 
 # detect number of cores for parallel computing
 ncores<-detectCores(all.tests = FALSE, logical = TRUE)
 
-if(mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
+if (mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
 # if(mysystem=="Linux") registerDoMC(ncores-15) # for starting the parallel calculations
-if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
-# out.temp<-foreach(st=1:10,.packages='fitdistrib') %dopar% {
+if (mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
+
+# Test line below
+out.temp<-foreach(st=1:5,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here
-  out.temp<-foreach(st=1:length(meta_dat$regine_main),.packages='fitdistrib') %dopar% {
+  # out.temp<-foreach(st=1:length(dat$station_number),.packages='fitdistrib') %dopar% {
 
 
 
 # for (st in seq(along = meta_dat$regine_main)) {
 # for (st in 1:5) {
-  # print(st)
+  print(st)
 
 # Need to store results from each parallel chain in temporary arrays
   par.param.estimate <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
@@ -304,7 +326,7 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
   temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), dim.max_subsample))
   if (length(temp.Q) <  min_years_data) {
     print("This station number has NULL or not enough data")
-    print(meta_dat$regine_main[st])
+    print(dat$station_number[st])
     next(st)
   } else {
 
@@ -377,7 +399,7 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
 } # dopar
 # Write the output from all paralell calculations to the NetCDF file.
 # Maybe later this might be improved by letting each paralell loop write to the same NetCDF file.
-for(st in 1 : length(meta_dat$regine_main)){
+for(st in 1 : length(dat$station_number)){
           var.put.nc(nc, "param.estimate", data = out.temp[[st]][[1]], start=c(st, 1, 1, 1, 1, 1),
                      count=c(1, dim.distr, dim.method, dim.param,dim.length_rec, dim.random_runs))
           var.put.nc(nc, "param.se", data = out.temp[[st]][[2]], start=c(st, 1, 1, 1, 1, 1),
