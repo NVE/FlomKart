@@ -36,5 +36,7 @@ Temporary Items
 .apdisk
 .Rproj.user
 .Rhistory
+*.nc
+*errorlog*
 inst/doc
 
