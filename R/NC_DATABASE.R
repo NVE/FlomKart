@@ -75,7 +75,6 @@ dim.distr <- 5
 dim.method <- 4
 dim.param <- 3
 dim.length_total_record <- 150
-dim.length_rec <- 13   # This means that we will do subsampling for i1=30,i2=35,.....i13=90 years of record.
 dim.random_runs <- 50
 dim.characters <- 64
 sampling_years <- seq(30, 90, 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
@@ -262,7 +261,7 @@ sync.nc(nc)  # Save what we've done so far
 #' @return
 #' @export
 #' @import doSNOW
-#' @importFrom parallel detectCores
+#' @import parallel
 #' @importFrom RNetCDF open.nc var.get.nc close.nc
 #' @examples
 fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
@@ -305,9 +304,9 @@ if (mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
 if (mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
 
 # Test line below
-out.temp<-foreach(st=1:5,.packages='fitdistrib') %dopar% {
+# out.temp<-foreach(st=1:5,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here
-  # out.temp<-foreach(st=1:length(dat$station_number),.packages='fitdistrib') %dopar% {
+  out.temp<-foreach(st=1:length(dat$station_number),.packages='fitdistrib') %dopar% {
 
 
 

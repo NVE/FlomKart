@@ -6,9 +6,6 @@
 \usage{
 BS4NC(dat, threshold, param, distr = "distr")
 }
-\arguments{
-\item{distr}{}
-}
 \description{
 Brier Score.
 This is implemented according to Equation 1 of the "Cross validation study and verification document"

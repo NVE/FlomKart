@@ -21,7 +21,8 @@ Imports: RNetCDF,
   stats,
   parallel,
   foreach,
-  doSNOW
+  doSNOW,
+  fBasics
 Suggests: doMC,
           packagedocs
 VignetteBuilder: packagedocs

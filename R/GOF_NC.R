@@ -209,7 +209,7 @@ sync.nc(gof_nc)
 #' @description Function to fill up the gof_nc database
 #' @return
 #' @export
-#'
+#' @import goftest tidyverse leaflet fitdistrib evd nsRFA ismev fitdistrplus stats parallel foreach
 #' @examples
 fillup_gofnc <- function() {
 
@@ -218,6 +218,7 @@ fillup_gofnc <- function() {
 nc <- open.nc("output/flood_database.nc", write = FALSE)
 gof_nc <- open.nc("output/gof.nc", write = TRUE)  # Put FALSE for read-only
 Q <- var.get.nc(nc, "Q")
+dim.length_rec <- var.get.nc(nc, "dim.length_rec") # To specify the end of the vector where the full record will be stored
 
 # Dumping all console output into errorlog.txt
 sink("output/errorlog_gofnc.txt")
@@ -255,7 +256,7 @@ for (st in 1:5) {
         # Temporary parameters retrieved from the parameter database. A 1d array
         # reminder: param.estimate[st, d, m, p, dim.length_rec, rs]
         param.estimate <- var.get.nc(nc, "param.estimate",
-                                     start = c(st, d, m, 1, 30, 1), count = c(1, 1, 1, 3, 1, 1))
+                                     start = c(st, d, m, 1, dim.length_rec, 1), count = c(1, 1, 1, 3, 1, 1))
 
         # Create temporary variables with NAs to fill the GOF_NC database
         # reminder r.levels[st, d, m, length_rec, dim.few_quantiles, dim.r_periods]
@@ -282,17 +283,17 @@ for (st in 1:5) {
         temp.AD <- gof_ad(temp.Q, param.estimate, as.character(distr))
         }
         }
-        # WRITE TEMP VARIABLES TO NC on spot 30 of the length_rec dimension
+        # WRITE TEMP VARIABLES TO NC on spot dim.length_rec of the length_rec dimension
         # reminder CS[st, d, m, length_rec, dim.few_quantiles]
-        var.put.nc(gof_nc, "r.levels", data = temp.r.levels, start = c(st, d, m, 30, 1, 1), count = c(1, 1, 1, 1, 1, dim.r_periods))
-        var.put.nc(gof_nc, "QS", data = temp.QS, start = c(st, d, m, 30, 1, 1), count = c(1, 1, 1, 1, 1, dim.r_periods))
-        var.put.nc(gof_nc, "BS", data = temp.BS, start = c(st, d, m, 30, 1, 1), count = c(1, 1, 1, 1, 1, dim.r_periods))
-        # var.put.nc(gof_nc, "NT", data = temp.NT, start = c(st, d, m, 30, 1), count = c(1, 1, 1, 1, dim.r_periods))  # TOCHECK
+        var.put.nc(gof_nc, "r.levels", data = temp.r.levels, start = c(st, d, m, dim.length_rec, 1, 1), count = c(1, 1, 1, 1, 1, dim.r_periods))
+        var.put.nc(gof_nc, "QS", data = temp.QS, start = c(st, d, m, dim.length_rec, 1, 1), count = c(1, 1, 1, 1, 1, dim.r_periods))
+        var.put.nc(gof_nc, "BS", data = temp.BS, start = c(st, d, m, dim.length_rec, 1, 1), count = c(1, 1, 1, 1, 1, dim.r_periods))
+        # var.put.nc(gof_nc, "NT", data = temp.NT, start = c(st, d, m, dim.length_rec, 1), count = c(1, 1, 1, 1, dim.r_periods))  # TOCHECK
 
 
-        var.put.nc(gof_nc, "CS", data = temp.CS, start = c(st, d, m, 30, 1), count = c(1, 1, 1, 1, 1))
-        var.put.nc(gof_nc, "KS", data = temp.KS, start = c(st, d, m, 30, 1), count = c(1, 1, 1, 1, 1))
-        var.put.nc(gof_nc, "AD", data = temp.AD, start = c(st, d, m, 30, 1), count = c(1, 1, 1, 1, 1))
+        var.put.nc(gof_nc, "CS", data = temp.CS, start = c(st, d, m, dim.length_rec, 1), count = c(1, 1, 1, 1, 1))
+        var.put.nc(gof_nc, "KS", data = temp.KS, start = c(st, d, m, dim.length_rec, 1), count = c(1, 1, 1, 1, 1))
+        var.put.nc(gof_nc, "AD", data = temp.AD, start = c(st, d, m, dim.length_rec, 1), count = c(1, 1, 1, 1, 1))
         # Recreate temporary variables but with 2 extra dimensions for j and rs
         # reminder: param.estimate[st, d, m, p, dim.length_rec, rs]
         rm(param.estimate)
@@ -310,7 +311,7 @@ for (st in 1:5) {
         temp.AD <- array(NA,dim=c(length(sampling_years), dim.few_quantiles))
 
         # RANDOM START: Fill up with the random runs with sampled data TO DO
-        # j is the index from 1 to 23 and sampling_years[j] is 30, 35... 140
+        # j is the index from 1 to 23 and sampling_years[j] is 30, 35... 90
         print("Computing sampled dataset")
         if (m < 4) {  # Random sampling of Bayes takes a very long time
         j <- 1

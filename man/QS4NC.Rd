@@ -6,9 +6,6 @@
 \usage{
 QS4NC(dat, r.levels, r.periods)
 }
-\arguments{
-\item{r.periods}{}
-}
 \description{
 Quantile Score. Only uses dat.sample so the calling script should be sending DAT.SAMPLE!
 This is implemented according to Equation 2 of the "Cross validation study and verification document"

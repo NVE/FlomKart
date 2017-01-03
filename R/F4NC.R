@@ -9,7 +9,7 @@
 #' @importFrom dplyr failwith
 #' @return
 #' @export
-#'
+#' @import nsRFA
 #' @examples
 gof_cs <- function(dat, param, distr = "distr") {
 
@@ -83,7 +83,6 @@ gof_cs <- function(dat, param, distr = "distr") {
 }
 
 
-
 #' gof_ks
 #' @description Kolmogorov Smirnov. Gives results with warnings but this is because some flood data are repeated (for some strange reason)
 #' @param dat
@@ -94,7 +93,7 @@ gof_cs <- function(dat, param, distr = "distr") {
 #'
 #' @return
 #' @export
-#'
+#' @import goftest tidyverse evd nsRFA glogis fBasics
 #' @examples
 gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FALSE) {
 
@@ -139,7 +138,7 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
 #' @importFrom goftest ad.test
 #' @return
 #' @export
-#'
+#' @import goftest tidyverse evd nsRFA glogis fBasics
 #' @examples
 gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FALSE) {
 
@@ -178,7 +177,7 @@ gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
 #' @param dat
 #' @param r.levels
 #' @param r.periods
-#'
+#' @import nsRFA
 #' @return
 #' @export
 #'
@@ -204,7 +203,7 @@ QS4NC <- function(dat, r.levels, r.periods) {
 #' @param threshold
 #' @param param
 #' @param distr
-#'
+#' @import nsRFA
 #' @return
 #' @export
 #'
