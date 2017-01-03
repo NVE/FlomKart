@@ -4,7 +4,8 @@
 \alias{fillup_nc}
 \title{fillup_nc}
 \usage{
-fillup_nc(dat = flood_data, nc_path = "output/flood_database.nc")
+fillup_nc(dat = flood_data, meta_dat = flood_metadata,
+  nc_path = "output/flood_database.nc")
 }
 \description{
 Function to fill upthe NetCDF database

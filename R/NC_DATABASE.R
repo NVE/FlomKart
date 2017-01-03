@@ -313,11 +313,11 @@ out.temp <- foreach(st=1:5,.packages='fitdistrib') %dopar% {
 
 # for (st in seq(along = meta_dat$regine_main)) {
 # for (st in 1:5) {
-  print(st)
+  print(meta_dat$station_number[st])
 
 # Need to store results from each parallel chain in temporary arrays
-  par.param.estimate <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
-  par.param.se <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
+  param.estimate <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
+  param.se <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
 
 
   temp.Q <- as.vector(na.omit(Q[st, ]))
@@ -345,7 +345,7 @@ out.temp <- foreach(st=1:5,.packages='fitdistrib') %dopar% {
     for (d in 1:5) {
       distr <- distr.name[d]
       print(distr)
-      for (m in 1:4) {  # k  # no bayes
+      for (m in 1:4) {  # k  # bayes is m=4
         # m=4  # k
         method <- method.name[m]
         print(method)
@@ -358,12 +358,12 @@ out.temp <- foreach(st=1:5,.packages='fitdistrib') %dopar% {
 
         if (length(na.omit(param$estimate)) == length(param$estimate)) {
 
-          par.param.estimate[d,m,1:2,dim.length_rec,1] <- param$estimate[1:2]
-          par.param.se[d,m,1:2,dim.length_rec,1] <- param$se[1:2]
+          param.estimate[d,m,1:2,dim.length_rec,1] <- param$estimate[1:2]
+          param.se[d,m,1:2,dim.length_rec,1] <- param$se[1:2]
 
           if (length(param$estimate == 3)) {
-            par.param.estimate[d,m,3,dim.length_rec,1] <- param$estimate[3]
-            par.param.se[d,m,3,dim.length_rec,1] <- param$se[3]
+            param.estimate[d,m,3,dim.length_rec,1] <- param$estimate[3]
+            param.se[d,m,3,dim.length_rec,1] <- param$se[3]
           } # if
         } # if
 
@@ -377,12 +377,12 @@ out.temp <- foreach(st=1:5,.packages='fitdistrib') %dopar% {
 
               if (length(na.omit(param.sample$estimate)) == length(param.sample$estimate)) {
 
-                par.param.estimate[d,m,1:2,j,rs] <- param.sample$estimate[1:2]
-                par.param.se[d,m,1:2,j,rs] <- param.sample$se[1:2]
+                param.estimate[d,m,1:2,j,rs] <- param.sample$estimate[1:2]
+                param.se[d,m,1:2,j,rs] <- param.sample$se[1:2]
 
                 if (length(param.sample$estimate ==3)) {
-                  par.param.estimate[d,m,3,j,rs] <- param.sample$estimate[3]
-                  par.param.se[d,m,3,j,rs] <- param.sample$se[3]
+                  param.estimate[d,m,3,j,rs] <- param.sample$estimate[3]
+                  param.se[d,m,3,j,rs] <- param.sample$se[3]
                 } # if
 
               } # if
@@ -395,7 +395,7 @@ out.temp <- foreach(st=1:5,.packages='fitdistrib') %dopar% {
       } # for m
     } # for d
   # } # else
-  out.temp <- list(par.param.estimate,par.param.se,temp.random_indexes,temp.Q)
+  out.temp <- list(param.estimate,param.se,temp.random_indexes,temp.Q)
 } # dopar
 # Write the output from all paralell calculations to the NetCDF file.
 # Maybe later this might be improved by letting each paralell loop write to the same NetCDF file.
