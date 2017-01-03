@@ -262,9 +262,10 @@ sync.nc(nc)  # Save what we've done so far
 #' @export
 #' @import doSNOW
 #' @import parallel
+#' @import foreach
 #' @importFrom RNetCDF open.nc var.get.nc close.nc
 #' @examples
-fillup_nc <- function(dat = flood_data, nc_path = "output/flood_database.nc") {
+fillup_nc <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "output/flood_database.nc") {
 
 ## To run if updating or creating the nc file from scratch  --------------
 
@@ -304,9 +305,9 @@ if (mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
 if (mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
 
 # Test line below
-# out.temp<-foreach(st=1:5,.packages='fitdistrib') %dopar% {
+out.temp <- foreach(st=1:5,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here
-  out.temp<-foreach(st=1:length(dat$station_number),.packages='fitdistrib') %dopar% {
+  # out.temp <- foreach(st=1:length(meta_dat$station_number),.packages='fitdistrib') %dopar% {
 
 
 
@@ -323,11 +324,11 @@ if (mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculat
 
 # we might resample with relplacement records that are longer than the original one. No limitation on the original recird length
   temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), dim.max_subsample))
-  if (length(temp.Q) <  min_years_data) {
-    print("This station number has NULL or not enough data")
-    print(dat$station_number[st])
-    next(st)
-  } else {
+  # if (length(temp.Q) <  min_years_data) {
+  #   print("This station number has NULL or not enough data")
+  #   print(meta_dat$station_number[st])
+  #   next(st)
+  # } else {
 
     # Computed random indexes before the for loops on distr and methods
     # We now resample with replacement records of length min
@@ -393,12 +394,12 @@ if (mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculat
         }  # if m < 4
       } # for m
     } # for d
-  } # else
-  out<-list(par.param.estimate,par.param.se,temp.random_indexes,temp.Q)
+  # } # else
+  out.temp <- list(par.param.estimate,par.param.se,temp.random_indexes,temp.Q)
 } # dopar
 # Write the output from all paralell calculations to the NetCDF file.
 # Maybe later this might be improved by letting each paralell loop write to the same NetCDF file.
-for(st in 1 : length(dat$station_number)){
+for(st in 1 : length(meta_dat$station_number)){
           var.put.nc(nc, "param.estimate", data = out.temp[[st]][[1]], start=c(st, 1, 1, 1, 1, 1),
                      count=c(1, dim.distr, dim.method, dim.param,dim.length_rec, dim.random_runs))
           var.put.nc(nc, "param.se", data = out.temp[[st]][[2]], start=c(st, 1, 1, 1, 1, 1),
