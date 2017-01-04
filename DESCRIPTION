@@ -13,7 +13,6 @@ Imports: RNetCDF,
   goftest,
   tidyverse,
   leaflet,
-  fitdistrib,
   evd,
   nsRFA,
   ismev,
@@ -23,6 +22,7 @@ Imports: RNetCDF,
   foreach,
   doSNOW,
   fBasics
+Remotes: NVE/fitdistrib
 Suggests: doMC,
           packagedocs
 VignetteBuilder: packagedocs

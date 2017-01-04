@@ -454,10 +454,12 @@ close.nc(nc)
 #' @examples
 fillup_nc <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "output/flood_database.nc") {
 
-  st_start <- 1
-  st_end <- 2
+  # st_start <- 1
+  # st_end <- 2
 
   # library(RNetCDF)
+  # library(fitdistrib)
+
 
   # To run if updating or creating the nc file from scratch  --------------
 
