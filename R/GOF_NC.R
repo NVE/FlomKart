@@ -213,6 +213,16 @@ sync.nc(gof_nc)
 #' @examples
 fillup_gofnc <- function() {
 
+  library(goftest)
+  library(tidyverse)
+
+  library(fitdistrib)
+  library(evd)
+  library(nsRFA)
+  library(ismev)
+  library(fitdistrplus)
+  library(stats)
+
 ## To run if updating or creating the nc file from scratch  --------------
 
 nc <- open.nc("output/flood_database.nc", write = FALSE)
@@ -220,11 +230,36 @@ gof_nc <- open.nc("output/gof.nc", write = TRUE)  # Put FALSE for read-only
 Q <- var.get.nc(nc, "Q")
 dim.length_rec <- var.get.nc(nc, "dim.length_rec") # To specify the end of the vector where the full record will be stored
 
+# Create a vector with all the different station numbers, in order to run every station separately in one go
+station.nb.vect <- var.get.nc(nc, "station.number")
+dim.station <- length(station.nb.vect)
+
+distr.name <- var.get.nc(nc, "distr.name")
+method.name <- var.get.nc(nc, "method.name")
+dim.distr <- length(distr.name)
+dim.method <- length(method.name)
+
+dim.random_runs <- var.get.nc(nc, "dim.random_runs")
+min_years_data <- var.get.nc(nc, "min_years_data")
+sampling_years <- var.get.nc(nc, "sampling_years")
+dim.max_subsample <- max(sampling_years)
+
+## TO TIDY UP so that it is read from the nc databases
+# New dimensions
+dim.r_periods <- 6  # This is new to GOF (wasn't in NC_DATABASE)
+return.periods <- c(10, 20, 50, 100, 200, 500)  # This is new to GOF (wasn't in NC_DATABASE)
+rperiods.bs <- c(2,5,10,15,20,30)  # return periods for the Brier score
+dim.few_quantiles <- 7  # min/max/q25%/q50%/Q75%/mean/sd
+
+dim.param <- 3
+dim.characters <- 64
+
+
 # Dumping all console output into errorlog.txt
 sink("output/errorlog_gofnc.txt")
 
-# for (st in seq(along = station.nb.vect)) {
-for (st in 1:5) {
+for (st in seq(along = station.nb.vect)) {
+# for (st in 1:2) {
   print(st)
   temp.Q <- as.vector(na.omit(Q[st, ]))
   if (length(temp.Q) <  min_years_data) {  # This is not GLOBAL_min_years to make sure "min_years_data"

@@ -91,16 +91,22 @@ att.put.nc(nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis result
 att.put.nc(nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
 station.name <- meta_dat$station_name
+station.name <- rep("to_fix", length(meta_dat$station_name))  # TEMP FIX before dealing with special characters
+
 # station.utmN <- meta_dat$station_name
 # station.utmE <- meta_dat$station_name
 station.long <- meta_dat$longitude
 station.lat <- meta_dat$latitude
 
+catchment.size <- meta_dat$area_total
+catchment.min.height <- meta_dat$height_minimum
+catchment.max.height <- meta_dat$height_maximum
+
 Q <- array(NA,dim=c(dim.station, dim.length_total_record))
 years <- array(NA,dim=c(dim.station, dim.length_total_record))
 dates <- array(NA,dim=c(dim.station, dim.length_total_record))
 
-# Loop over the stations to fill variables: Q, station.name
+# Loop over the stations to fill variables: Q, ADD FLOOD GENERATING PROCESS!
 for (i in seq(along = meta_dat$regine_main)) {
 
   indexes <- which(dat$regine_main == meta_dat$regine_main[i])
@@ -136,6 +142,13 @@ att.put.nc(nc, "Q", "long_name", "NC_CHAR", "Yearly flood records (averaged maxi
 var.put.nc(nc, "Q", Q)
 sync.nc(nc)
 
+var.def.nc(nc, varname = "record.length", vartype = "NC_INT", dimensions = "station")
+att.put.nc(nc, "record.length", "missing_value", "NC_INT", -9999)
+att.put.nc(nc, "record.length", "short_name", "NC_CHAR", "Record length")
+att.put.nc(nc, "record.length", "long_name", "NC_CHAR", "Flood records length for each station")
+var.put.nc(nc, "record.length", meta_dat$record_length)
+
+
 var.def.nc(nc, varname = "years", vartype = "NC_INT", dimensions = c("station", "length_total_record"))
 att.put.nc(nc, "years", "missing_value", "NC_INT", -9999)
 att.put.nc(nc, "years", "short_name", "NC_CHAR", "Years of record")
@@ -165,9 +178,9 @@ var.put.nc(nc, "method.name", method.name)
 sync.nc(nc)
 
 ## TEMP: we need to get the names back but we need to deal with the special characters.
-# var.def.nc(nc,  varname = "station.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
-# att.put.nc(nc, "station.name", "missing_value", "NC_CHAR", "NA")
-# var.put.nc(nc, "station.name", station.name)
+var.def.nc(nc,  varname = "station.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
+att.put.nc(nc, "station.name", "missing_value", "NC_CHAR", "NA")
+var.put.nc(nc, "station.name", station.name)
 # sync.nc(nc)
 
 # var.def.nc(nc,  varname = "station.utmN", vartype = "NC_INT", dimensions = "station")
@@ -193,17 +206,17 @@ var.def.nc(nc,  varname = "station.number", vartype = "NC_FLOAT", dimensions = "
 att.put.nc(nc, "station.number", "missing_value", "NC_FLOAT", -9999)
 var.put.nc(nc, "station.number", meta_dat$station_number)
 
-# var.def.nc(nc, varname = "catchment.size", vartype = "NC_FLOAT", dimensions = "station")
-# att.put.nc(nc, "catchment.size", "missing_value", "NC_FLOAT", "NA")
-# var.put.nc(nc, "catchment.size", catchment.size)
-#
-# var.def.nc(nc, varname = "catchment.min.height", vartype = "NC_FLOAT", dimensions = "station")
-# att.put.nc(nc, "catchment.min.height", "missing_value", "NC_CHAR", "NA")
-# var.put.nc(nc, "catchment.min.height", catchment.min.height)
-#
-# var.def.nc(nc, varname = "catchment.max.height", vartype = "NC_FLOAT", dimensions = "station")
-# att.put.nc(nc, "catchment.max.height", "missing_value", "NC_CHAR", "NA")
-# var.put.nc(nc, "catchment.max.height", catchment.max.height)
+var.def.nc(nc, varname = "catchment.size", vartype = "NC_FLOAT", dimensions = "station")
+att.put.nc(nc, "catchment.size", "missing_value", "NC_FLOAT", "NA")
+var.put.nc(nc, "catchment.size", catchment.size)
+
+var.def.nc(nc, varname = "catchment.min.height", vartype = "NC_FLOAT", dimensions = "station")
+att.put.nc(nc, "catchment.min.height", "missing_value", "NC_CHAR", "NA")
+var.put.nc(nc, "catchment.min.height", catchment.min.height)
+
+var.def.nc(nc, varname = "catchment.max.height", vartype = "NC_FLOAT", dimensions = "station")
+att.put.nc(nc, "catchment.max.height", "missing_value", "NC_CHAR", "NA")
+var.put.nc(nc, "catchment.max.height", catchment.max.height)
 sync.nc(nc)
 
 # Saving parameters that will be used in creating the fitting data
@@ -268,9 +281,9 @@ sync.nc(nc)  # Save what we've done so far
 #' @examples
 fillup_nc_parallel <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "output/flood_database.nc") {
 
-  # st_start <- 1
-  # st_end <- 20
-
+#   st_start <- 1
+#   st_end <- 20
+#
 # library(RNetCDF)
 # library(doSNOW)
 # library(foreach)
@@ -429,7 +442,7 @@ sink()  # Stop printing console onto file
 sync.nc(nc)
 close.nc(nc)
 
-}  # end of fillup_nc function
+}  # end of fillup_nc_parallel function
 
 # Names of stations that appear twice. This is not a problem, they are different stations
 # because they have a different number
