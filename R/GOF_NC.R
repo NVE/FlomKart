@@ -209,13 +209,12 @@ sync.nc(gof_nc)
 #' @description Function to fill up the gof_nc database
 #' @return
 #' @export
-#' @import goftest tidyverse leaflet fitdistrib evd nsRFA ismev fitdistrplus stats parallel foreach
+#' @import goftest tidyverse fitdistrib evd nsRFA ismev fitdistrplus stats
 #' @examples
 fillup_gofnc <- function() {
 
   library(goftest)
   library(tidyverse)
-
   library(fitdistrib)
   library(evd)
   library(nsRFA)
@@ -259,7 +258,7 @@ dim.characters <- 64
 sink("output/errorlog_gofnc.txt")
 
 for (st in seq(along = station.nb.vect)) {
-# for (st in 1:2) {
+# for (st in 1:3) {
   print(st)
   temp.Q <- as.vector(na.omit(Q[st, ]))
   if (length(temp.Q) <  min_years_data) {  # This is not GLOBAL_min_years to make sure "min_years_data"
@@ -350,8 +349,8 @@ for (st in seq(along = station.nb.vect)) {
         print("Computing sampled dataset")
         if (m < 4) {  # Random sampling of Bayes takes a very long time
         j <- 1
-        while (sampling_years[j] <= length(temp.Q) && sampling_years[j] <= max(sampling_years)) {
-
+        while (sampling_years[j] <= max(sampling_years)) {
+          # sampling_years[j] <= length(temp.Q) && ## This was in the while before which stops it to early for stations with short records
           temp.random.rlevels <- array(NA,dim=c(dim.random_runs, dim.r_periods))
           temp.random.QS <- array(NA,dim=c(dim.random_runs, dim.r_periods))
           temp.random.BS <- array(NA,dim=c(dim.random_runs, dim.r_periods))

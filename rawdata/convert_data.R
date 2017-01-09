@@ -7,12 +7,15 @@ date_vect <- ymd(dat$daily_ams_dates)
 regine_main <- paste(flood_data$regine,".",flood_data$main, sep = "")
 station_number <- dat$regine * 10^8 + dat$main * 10^3
 
+julian_day <- yday(as.Date(date_vect))
+
 flood_data <- data.frame(regine = dat$regine,
                          main = dat$main,
                          regine_main = regine_main,
                          station_number = station_number,
                          date = dat$daily_ams_dates,
                          year = year(date_vect), month = month(date_vect), day = day(date_vect),
+                         julian_day = julian_day,
                          flom_DOGN = dat$daily_ams.1,
                          fgp = dat$FGP)  # Flood generating processes
 
@@ -27,6 +30,8 @@ individual_stations <- unique(flood_data$regine_main)
 individual_stations_number <- unique(flood_data$station_number)
 
 record_length <- c()
+median_fgp <- c()
+median_julian <- c()
 # Starting with a data frame that has all the collumn names of the NVEDATA dataset but our list of stations
 flood_metadata <- meta_data[1, ]
 flood_metadata[1:length(individual_stations), ] <- NA
@@ -34,7 +39,11 @@ flood_metadata$regine_main[1:length(individual_stations)] <- as.character(indivi
 
 for (i in seq(along = individual_stations)) {
 
-record_length[i] <- length(which(flood_data$regine_main == individual_stations[i]))
+  station_indexes <- which(flood_data$regine_main == individual_stations[i])
+
+record_length[i] <- length(station_indexes)
+median_fgp[i] <- median(flood_data$fgp[station_indexes])
+median_julian[i] <- median(flood_data$julian_day[station_indexes])
 
 if (length(which(meta_data$regine_main == individual_stations[i])) > 0) {
 flood_metadata[i, ] <- meta_data[which(meta_data$regine_main == individual_stations[i]),]
@@ -44,6 +53,8 @@ flood_metadata[i, ] <- meta_data[which(meta_data$regine_main == individual_stati
 
 # We add the entire length of record and station_number vectors to the dataframe
 flood_metadata["record_length"] <-  record_length
+flood_metadata["median_fgp"] <-  median_fgp
+flood_metadata["median_julian"] <-  median_julian
 flood_metadata["station_number"] <-  individual_stations_number
 
 # Let's only take stations that have more than 30 years of record. (This could be later parametrized in the NC_DATABASE functions)

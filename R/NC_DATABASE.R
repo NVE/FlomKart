@@ -103,6 +103,7 @@ catchment.min.height <- meta_dat$height_minimum
 catchment.max.height <- meta_dat$height_maximum
 
 Q <- array(NA,dim=c(dim.station, dim.length_total_record))
+FGP <- array(NA,dim=c(dim.station, dim.length_total_record))
 years <- array(NA,dim=c(dim.station, dim.length_total_record))
 dates <- array(NA,dim=c(dim.station, dim.length_total_record))
 
@@ -113,6 +114,7 @@ for (i in seq(along = meta_dat$regine_main)) {
 
   # Matrices
   Q[i, 1:meta_dat$record_length[i]] <- dat$flom_DOGN[indexes]
+  FGP[i, 1:meta_dat$record_length[i]] <- dat$fgp[indexes]
   years[i, 1:meta_dat$record_length[i]] <- dat$year[indexes]
   dates[i, 1:meta_dat$record_length[i]] <- dat$date[indexes]
 
@@ -140,6 +142,12 @@ att.put.nc(nc, "Q", "missing_value", "NC_FLOAT", -9999)
 att.put.nc(nc, "Q", "short_name", "NC_CHAR", "Flood record")
 att.put.nc(nc, "Q", "long_name", "NC_CHAR", "Yearly flood records (averaged maximum daily flow in m3/s) for Norway")
 var.put.nc(nc, "Q", Q)
+
+var.def.nc(nc, varname = "FGP", vartype = "NC_FLOAT", dimensions = c("station", "length_total_record"))
+att.put.nc(nc, "FGP", "missing_value", "NC_FLOAT", -9999)
+att.put.nc(nc, "FGP", "short_name", "NC_CHAR", "FGP")
+att.put.nc(nc, "FGP", "long_name", "NC_CHAR", "Flood generating process for each event (%rain)")
+var.put.nc(nc, "FGP", FGP)
 sync.nc(nc)
 
 var.def.nc(nc, varname = "record.length", vartype = "NC_INT", dimensions = "station")
@@ -498,7 +506,7 @@ fillup_nc <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "ou
   sink("output/errorlog.txt")  # CHECK DIR
 
   for (st in seq(along = meta_dat$station_number)) {
-    # for (st in 1:5) {
+    # for (st in 1:3) {
     print(meta_dat$station_number[st])
     temp.Q <- as.vector(na.omit(Q[st, ]))
 
@@ -513,7 +521,8 @@ fillup_nc <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "ou
       # Computed random indexes before the for loops on distr and methods
       temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), dim.max_subsample))
       j <- 1
-      while (sampling_years[j] <= length(temp.Q) && sampling_years[j] <= max(sampling_years)) {
+      while (sampling_years[j] <= max(sampling_years)) {
+        # sampling_years[j] <= length(temp.Q) && ## This was in the while before which stops it to early for stations with short records
         for (rs in 1:dim.random_runs) {  # sampling.int is by default without replacement
           # now we sample with replacement. We could also sample with replacement for the full length of record
           # for each station but this requires some playing with indices
@@ -568,7 +577,8 @@ fillup_nc <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "ou
 
           if (m < 4) {  # Random sampling of Bayes takes a very long time  # k
             j <- 1
-            while (sampling_years[j] <= length(temp.Q) && sampling_years[j] <= max(sampling_years)) {
+            while (sampling_years[j] <= max(sampling_years)) {
+              # sampling_years[j] <= length(temp.Q) && ## This was in the while before which stops it to early for stations with short records
               for (rs in 1:dim.random_runs) {
                 # Reminder: temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), max_subsample))
                 sample_q <- temp.Q[temp.random_indexes[rs, j, 1:sampling_years[j]]]
