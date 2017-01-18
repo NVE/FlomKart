@@ -299,6 +299,8 @@ fillup_nc_parallel <- function(dat = flood_data, meta_dat = flood_metadata, nc_p
 
 ## To run if updating or creating the nc file from scratch  --------------
 
+set.seed(1234)  # So that the random runs are reproducible
+
 nc <- open.nc(nc_path, write = TRUE)  # Put FALSE for read-only  # CHECK DIR
 Q <- var.get.nc(nc, "Q")
 
