@@ -3,7 +3,7 @@
 set -e
 
 [ -z "${GITHUB_PAT_FlomKart}" ] && exit 0
-[ "${TRAVIS_BRANCH}" != "master" ] && exit 0
+[ "${TRAVIS_BRANCH}" != "florian" ] && exit 0
 
 # configure your name and email if you have not done so
 git config --global user.email "fbaffie@gmail.com"

@@ -6,9 +6,6 @@
 \usage{
 gof_ad(dat, param, distr = "distr", test.stat = TRUE, p.value = FALSE)
 }
-\arguments{
-\item{p.value}{}
-}
 \description{
 Anderson Darling
 }

@@ -51,179 +51,73 @@
 
 
 
-#' update_nc
-#' @description Function to update the nc database
+#' create_empty_nc
+#'
+#' @param dat Flood data. The default is the data inculded in this package.
+#'
+#' @description Function to create the structure of the NetCDF file.
+#'
 #' @return
+#' @importFrom RNetCDF create.nc att.put.nc dim.def.nc var.def.nc var.put.nc sync.nc
 #' @export
 #'
-#' @examples
-update_nc <- function() {
+#' @examples summary(flood_data)
+#' # update_nc_structure()
+create_empty_nc <- function(dat = flood_data, meta_dat = flood_metadata, min_years_data = 30) {
 
+# Let's only take stations that have more than 30 years of record. (This could be later parametrized in the NC_DATABASE functions)
+meta_dat <- subset(meta_dat, meta_dat$record_length >= min_years_data)
 
-mysystem<-Sys.info()['sysname']
-if(mysystem == "Linux") library(doMC) # parallel backend Linux
-if(mysystem == "Windows") library(doSNOW) # parallel backend Windows
+## Defining key parameters and dimensions
 
-# Source all the required R files
-# source('LOAD.r')      # Required to load Q into database and save station coordinates
-
-
-## To run at every update --------------
-raw_dat <- read.delim("../rawdata/AMS_table_HYDRA_endelig.txt", sep="\t", as.is=TRUE)  # CHECK DIR
-raw_dat$year <- year(raw_dat$dt_flood_daily_date)
-raw_dat$snumber <- raw_dat$regine_area * 10^5 + raw_dat$main_nr
-
-# Old data for station names only
-old_dat <- read.csv("../rawdata/AMS_table_old.csv", sep=";", as.is=TRUE)  # CHECK DIR
-
-for (i in 1:length(raw_dat$year)) {
-  if (length(which(old_dat$snumber == raw_dat$snumber[i])) > 0) {
-  raw_dat$name[i] <- old_dat$name[which(old_dat$snumber == raw_dat$snumber[i])[1]]
-  } else {
-    raw_dat$name[i] <- "NO_NAME"
-  }
-}
-
-# Get rid of the double flood values for 1 year (we take the max by setting the min to NA)
-for (i in 1:(length(raw_dat$year) - 1)) {
-  if (!is.na(raw_dat$year[i])) {
-    if (raw_dat$year[i] == raw_dat$year[i + 1] && any(is.na(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1]))) == FALSE ) {
-      min_index <- which(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1]) == min(c(raw_dat$value_q_daily[i], raw_dat$value_q_daily[i + 1])))
-      raw_dat$value_q_daily[i - 1 + min_index] <- NA
-    }
-  }
-}
-
-# Let's first get rid of any data line that has an NA flow and create the dat list
-dat <- list()
-keep <- which(!is.na(raw_dat$value_q_daily))
-
-dat$regine_area <- raw_dat$regine_area[keep]
-dat$main_nr <- raw_dat$main_nr[keep]
-dat$snumber <- raw_dat$snumber[keep]
-dat$name <- raw_dat$name[keep]
-
-dat$flom_DOGN <- raw_dat$value_q_daily[keep]
-dat$date <- raw_dat$dt_flood_daily_date[keep]
-dat$year <- raw_dat$year[keep]
-
-dat$fraction_rain <- raw_dat$fraction_rain[keep]
-
-# Making list of snumber and getting rid of stations with not enough data
-station.nb.vect.init <- na.omit(unique(dat$snumber))
-
-min_years_data <- 30  # set the minimum number of years to accept a station
-max_years_ss <-90 # The maximum record length for subsampling
-station.nb.vect <- c()
-length_rec <- c()
-
-for (i in seq(along = station.nb.vect.init)) {
-
-  length_record <- length(which(dat$snumber == station.nb.vect.init[i]))
-  if (length_record >= min_years_data) {
-    station.nb.vect <- c(station.nb.vect, station.nb.vect.init[i])
-    length_rec <- c(length_rec, length_record)
-  }
-
-}
-
-dim.station <- length(station.nb.vect)
-#station.nb.vect <- station.nb.vect[1:dim.station]
-
-
-# Read station coordinates
-utminfo <- read.table("../rawdata/Coordinates_for_R.txt",
-                      sep = "\t", header = T)  # CHECK DIR
-dat <- save_coordinates(dat, station.nb.vect)  # this function is in LOAD.R
-
-# Read catchments area
-catchment.prop <- read.csv("../rawdata/Hydra_FeltparTabell.csv", sep=";")  # CHECK DIR
-catchment.prop$COMPOUND_K <- catchment.prop$COMPOUND_K / 1000  # to get the same numbers as in the main data file
-catchment.size <- rep("NA", length(station.nb.vect))
-catchment.min.height <- rep("NA", length(station.nb.vect))
-catchment.max.height <- rep("NA", length(station.nb.vect))
-
-indexes.in.catchmentprop  <- rep("NA", length(station.nb.vect))
-
-for (i in seq(along = station.nb.vect)) {
-if (is.numeric(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))) {
-  if (as.numeric(length(which(catchment.prop$COMPOUND_K == station.nb.vect[i]))) > 0) {
-    indexes.in.catchmentprop[i] <- which(catchment.prop$COMPOUND_K == station.nb.vect[i])[1]
-    # [1] because some snumbers occur twice in the Hydra_FeltparTabell.csv
-  }
-}
-}
-
-indexes.in.catchmentprop <- as.numeric(indexes.in.catchmentprop)
-
-catchment.size <- as.numeric(catchment.prop$AREAL_UTM3[as.numeric(indexes.in.catchmentprop)])
-catchment.min.height <- catchment.prop$HEIGHT_MIN[as.numeric(indexes.in.catchmentprop)]
-catchment.max.height <- catchment.prop$HEIGHT_MAX[as.numeric(indexes.in.catchmentprop)]
-
-################################################
-# detect number of cores for parallel computing
-ncores<-detectCores(all.tests = FALSE, logical = TRUE)
-
+dim.station <- length(meta_dat$regine_main)
 dim.distr <- 5
 dim.method <- 4
 dim.param <- 3
 dim.length_total_record <- 150
-# dim.length_rec <- 30   # This means that we will do subsampling for i1=30,i2=35,.....i23=140 years of record.
 dim.random_runs <- 50
 dim.characters <- 64
-sampling_years <- seq(min_years_data, 5 * trunc(max_years_ss / 5), 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
+sampling_years <- seq(30, 90, 5)  # Subsampling from min_years_data until 90 years of data, increments of 5 years
 dim.max_subsample <- max(sampling_years)
-dim.length_rec <- length(sampling_years)+1   # The last index is for storing the full record.
+dim.length_rec <- length(sampling_years) + 1   # The last index is for storing the full record.
 distr.name <- c("gumbel", "gamma", "gev", "gl", "pearson")
 method.name <- c("mle", "Lmom", "mom", "bayes")
 
-}
-
-
-#' create_nc
-#' @description Function to create an empty nc database for FlomKart
-#' @return
-#' @export
-#'
-#' @examples
-create_nc <- function() {
-
-## To run if creating the nc file from scratch  --------------
+## Create an empty NC file with the parameters defined above
 
 # Creation of the CDF dataset and definition of the dimensions
-nc <- create.nc("../output/flood_database.nc")  # CHECK DIR
+nc <- create.nc("output/flood_database.nc")  # CHECK DIR
 att.put.nc(nc, "NC_GLOBAL", "title", "NC_CHAR", "Flood frequency analysis results")
 att.put.nc(nc, "NC_GLOBAL", "history", "NC_CHAR", paste("Created on", base::date()))
 
-station.name <- rep("NA", dim.station)
-station.utmN <- rep(-9999, dim.station)
-station.utmE <- rep(-9999, dim.station)
-station.long <- rep(-9999, dim.station)
-station.lat <- rep(-9999, dim.station)
-station.lat <- rep(-9999, dim.station)
-station.length_rec <- length_rec
+station.name <- meta_dat$station_name
+station.name <- rep("to_fix", length(meta_dat$station_name))  # TEMP FIX before dealing with special characters
 
+# station.utmN <- meta_dat$station_name
+# station.utmE <- meta_dat$station_name
+station.long <- meta_dat$longitude
+station.lat <- meta_dat$latitude
+
+catchment.size <- meta_dat$area_total
+catchment.min.height <- meta_dat$height_minimum
+catchment.max.height <- meta_dat$height_maximum
 
 Q <- array(NA,dim=c(dim.station, dim.length_total_record))
+FGP <- array(NA,dim=c(dim.station, dim.length_total_record))
 years <- array(NA,dim=c(dim.station, dim.length_total_record))
 dates <- array(NA,dim=c(dim.station, dim.length_total_record))
 
-# Loop over the stations to fill variables: Q, station.name
-for (i in seq(along = station.nb.vect)) {
+# Loop over the stations to fill variables: Q, ADD FLOOD GENERATING PROCESS!
+for (i in seq(along = meta_dat$regine_main)) {
 
-  indexes <- which(dat$snumber == station.nb.vect[i])
+  indexes <- which(dat$regine_main == meta_dat$regine_main[i])
 
   # Matrices
-  Q[i, 1:length_rec[i]] <- dat$flom_DOGN[indexes]
-  years[i, 1:length_rec[i]] <- dat$year[indexes]
-  dates[i, 1:length_rec[i]] <- dat$date[indexes]
+  Q[i, 1:meta_dat$record_length[i]] <- dat$flom_DOGN[indexes]
+  FGP[i, 1:meta_dat$record_length[i]] <- dat$fgp[indexes]
+  years[i, 1:meta_dat$record_length[i]] <- dat$year[indexes]
+  dates[i, 1:meta_dat$record_length[i]] <- dat$date[indexes]
 
-  # Vectors
-  station.name[i] <-  as.character(unique(dat$name[indexes]))
-  station.utmN[i] <- unique(dat$utmN[indexes])
-  station.utmE[i] <-  unique(dat$utmE[indexes])
-  station.long[i] <-  unique(dat$long[indexes])
-  station.lat[i] <-  unique(dat$lat[indexes])
 }
 
 random_indexes <- array(NA, dim = c(dim.station, dim.random_runs, length(sampling_years), dim.max_subsample))
@@ -238,8 +132,8 @@ dim.def.nc(nc, "random_runs", dim.random_runs)
 dim.def.nc(nc, "max_string_length", dim.characters)
 dim.def.nc(nc, "subsampling", length(sampling_years))
 dim.def.nc(nc, "max_subsample", dim.max_subsample)
-dim.def.nc(nc, "scalars", 1)
-sync.nc(nc)
+# dim.def.nc(nc, "scalars", 1)
+# sync.nc(nc)
 
 # Definition of the variables and which dimension they are linked to
 # Input data
@@ -248,7 +142,20 @@ att.put.nc(nc, "Q", "missing_value", "NC_FLOAT", -9999)
 att.put.nc(nc, "Q", "short_name", "NC_CHAR", "Flood record")
 att.put.nc(nc, "Q", "long_name", "NC_CHAR", "Yearly flood records (averaged maximum daily flow in m3/s) for Norway")
 var.put.nc(nc, "Q", Q)
+
+var.def.nc(nc, varname = "FGP", vartype = "NC_FLOAT", dimensions = c("station", "length_total_record"))
+att.put.nc(nc, "FGP", "missing_value", "NC_FLOAT", -9999)
+att.put.nc(nc, "FGP", "short_name", "NC_CHAR", "FGP")
+att.put.nc(nc, "FGP", "long_name", "NC_CHAR", "Flood generating process for each event (%rain)")
+var.put.nc(nc, "FGP", FGP)
 sync.nc(nc)
+
+var.def.nc(nc, varname = "record.length", vartype = "NC_INT", dimensions = "station")
+att.put.nc(nc, "record.length", "missing_value", "NC_INT", -9999)
+att.put.nc(nc, "record.length", "short_name", "NC_CHAR", "Record length")
+att.put.nc(nc, "record.length", "long_name", "NC_CHAR", "Flood records length for each station")
+var.put.nc(nc, "record.length", meta_dat$record_length)
+
 
 var.def.nc(nc, varname = "years", vartype = "NC_INT", dimensions = c("station", "length_total_record"))
 att.put.nc(nc, "years", "missing_value", "NC_INT", -9999)
@@ -278,20 +185,21 @@ att.put.nc(nc, "method.name", "long_name", "NC_CHAR", "Estimation methods used: 
 var.put.nc(nc, "method.name", method.name)
 sync.nc(nc)
 
+## TEMP: we need to get the names back but we need to deal with the special characters.
 var.def.nc(nc,  varname = "station.name", vartype = "NC_CHAR", dimensions = c("max_string_length", "station"))
 att.put.nc(nc, "station.name", "missing_value", "NC_CHAR", "NA")
 var.put.nc(nc, "station.name", station.name)
-sync.nc(nc)
+# sync.nc(nc)
 
-var.def.nc(nc,  varname = "station.utmN", vartype = "NC_INT", dimensions = "station")
-att.put.nc(nc, "station.utmN", "missing_value", "NC_INT", -9999)
-var.put.nc(nc, "station.utmN", station.utmN)
-sync.nc(nc)
+# var.def.nc(nc,  varname = "station.utmN", vartype = "NC_INT", dimensions = "station")
+# att.put.nc(nc, "station.utmN", "missing_value", "NC_INT", -9999)
+# var.put.nc(nc, "station.utmN", station.utmN)
+# sync.nc(nc)
 
-var.def.nc(nc,  varname = "station.utmE", vartype = "NC_INT", dimensions = "station")
-att.put.nc(nc, "station.utmE", "missing_value", "NC_INT", -9999)
-var.put.nc(nc, "station.utmE", station.utmE)
-sync.nc(nc)
+# var.def.nc(nc,  varname = "station.utmE", vartype = "NC_INT", dimensions = "station")
+# att.put.nc(nc, "station.utmE", "missing_value", "NC_INT", -9999)
+# var.put.nc(nc, "station.utmE", station.utmE)
+# sync.nc(nc)
 
 var.def.nc(nc,  varname = "station.long", vartype = "NC_FLOAT", dimensions = "station")
 att.put.nc(nc, "station.long", "missing_value", "NC_FLOAT", -9999)
@@ -301,9 +209,10 @@ var.def.nc(nc,  varname = "station.lat", vartype = "NC_FLOAT", dimensions = "sta
 att.put.nc(nc, "station.lat", "missing_value", "NC_FLOAT", -9999)
 var.put.nc(nc, "station.lat", station.lat)
 
-var.def.nc(nc,  varname = "station.number", vartype = "NC_INT", dimensions = "station")
-att.put.nc(nc, "station.number", "missing_value", "NC_INT", -9999)
-var.put.nc(nc, "station.number", station.nb.vect)
+# Station numbers are integers, but we use float because thez are too big
+var.def.nc(nc,  varname = "station.number", vartype = "NC_FLOAT", dimensions = "station")
+att.put.nc(nc, "station.number", "missing_value", "NC_FLOAT", -9999)
+var.put.nc(nc, "station.number", meta_dat$station_number)
 
 var.def.nc(nc, varname = "catchment.size", vartype = "NC_FLOAT", dimensions = "station")
 att.put.nc(nc, "catchment.size", "missing_value", "NC_FLOAT", "NA")
@@ -365,63 +274,93 @@ rm(param.se)
 
 sync.nc(nc)  # Save what we've done so far
 
-# To run if the input data part of the NC file  is not yet defined----------------------------------------------
-
-nc <- open.nc("../output/flood_database.nc", write = TRUE)  # Put FALSE for read-only  # CHECK DIR
-
-var.put.nc(nc, "Q", Q)
-var.put.nc(nc, "station.name", station.name)
-var.put.nc(nc, "station.utmN", station.utmN)
-var.put.nc(nc, "station.utmE", station.utmE)
-var.put.nc(nc, "station.long", station.long)
-var.put.nc(nc, "station.lat", station.lat)
-
-sync.nc(nc)
-
 }
 
 
-#' fillup_nc
+#' fillup_nc_parallel
 #' @description Function to fill upthe NetCDF database
 #' @return
 #' @export
-#'
+#' @import doSNOW
+#' @import parallel
+#' @import foreach
+#' @import fitdistrib
+#' @importFrom RNetCDF open.nc var.get.nc close.nc
 #' @examples
-fillup_nc <- function() {
+fillup_nc_parallel <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "output/flood_database.nc") {
+
+#   st_start <- 1
+#   st_end <- 20
+#
+# library(RNetCDF)
+# library(doSNOW)
+# library(foreach)
+# library(parallel)
 
 ## To run if updating or creating the nc file from scratch  --------------
 
-nc <- open.nc("../output/flood_database.nc", write = TRUE)  # Put FALSE for read-only  # CHECK DIR
+set.seed(1234)  # So that the random runs are reproducible
+
+nc <- open.nc(nc_path, write = TRUE)  # Put FALSE for read-only  # CHECK DIR
 Q <- var.get.nc(nc, "Q")
 
+# Getting dimensional data from the empty database (TO TIDY UP)
+distr.name <- var.get.nc(nc, "distr.name")
+method.name <- var.get.nc(nc, "method.name")
+dim.distr <- length(distr.name)
+dim.method <- length(method.name)
+dim.length_rec <- var.get.nc(nc, "dim.length_rec")
+
+dim.param <- 3
+dim.characters <- 64
+
+dim.random_runs <- var.get.nc(nc, "dim.random_runs")
+min_years_data <- var.get.nc(nc, "min_years_data")
+sampling_years <- var.get.nc(nc, "sampling_years")
+dim.max_subsample <- max(sampling_years)
+
 # Dumping all console output into errorlog.txt
-sink("../output/errorlog.txt")  # CHECK DIR
+sink("output/errorlog.txt")  # CHECK DIR
 
-if(mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
-if(mysystem=="Linux") registerDoMC(ncores-15) # for starting the parallel calculations
-if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
-# out.temp<-foreach(st=1:10,.packages='fitdistrib') %dopar% {
+
+## Stuff for paralell computing
+
+mysystem<-Sys.info()['sysname']
+# if(mysystem == "Linux") library(doMC) # parallel backend Linux
+if (mysystem == "Windows") library(doSNOW) # parallel backend Windows
+
+# detect number of cores for parallel computing
+ncores<-detectCores(all.tests = FALSE, logical = TRUE)
+
+if (mysystem=="Windows")cl<-makeCluster(ncores-1) # leave one core free
+# if(mysystem=="Linux") registerDoMC(ncores-15) # for starting the parallel calculations
+if (mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculations
+
+# Test line below
+# out.temp <- foreach(st=st_start:st_end,.packages='fitdistrib') %dopar% {
 # foreach starts the paralell loop. In order to gain computing speed when using non-Bayesian methods- the parallel loop should be here
-  out.temp<-foreach(st=1:length(station.nb.vect),.packages='fitdistrib') %dopar% {
+  out.temp <- foreach(st=1:length(meta_dat$station_number),.packages='fitdistrib') %dopar% {
 
-# for (st in seq(along = station.nb.vect)) {
+
+
+# for (st in seq(along = meta_dat$regine_main)) {
 # for (st in 1:5) {
-  print(st)
+  print(meta_dat$station_number[st])
 
 # Need to store results from each parallel chain in temporary arrays
-  par.param.estimate <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
-  par.param.se <- array(NA,dim=c(dim.distr,dim.method,dim.param, dim.length_rec,dim.random_runs))
+  estimate <- array(NA, dim = c(dim.distr, dim.method, dim.param, dim.length_rec, dim.random_runs))
+  se <- array(NA, dim = c(dim.distr, dim.method, dim.param, dim.length_rec, dim.random_runs))
 
 
   temp.Q <- as.vector(na.omit(Q[st, ]))
 
 # we might resample with relplacement records that are longer than the original one. No limitation on the original recird length
   temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), dim.max_subsample))
-  if (length(temp.Q) <  min_years_data) {
-    print("This station number has NULL or not enough data")
-    print(station.nb.vect[st])
-    next(st)
-  } else {
+  # if (length(temp.Q) <  min_years_data) {
+  #   print("This station number has NULL or not enough data")
+  #   print(meta_dat$station_number[st])
+  #   next(st)
+  # } else {
 
     # Computed random indexes before the for loops on distr and methods
     # We now resample with replacement records of length min
@@ -438,7 +377,7 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
     for (d in 1:5) {
       distr <- distr.name[d]
       print(distr)
-      for (m in 1:4) {  # k  # no bayes
+      for (m in 1:3) {  # k  # bayes is m=4
         # m=4  # k
         method <- method.name[m]
         print(method)
@@ -451,12 +390,12 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
 
         if (length(na.omit(param$estimate)) == length(param$estimate)) {
 
-          par.param.estimate[d,m,1:2,dim.length_rec,1] <- param$estimate[1:2]
-          par.param.se[d,m,1:2,dim.length_rec,1] <- param$se[1:2]
+          estimate[d,m,1:2,dim.length_rec,1] <- param$estimate[1:2]
+          se[d,m,1:2,dim.length_rec,1] <- param$se[1:2]
 
           if (length(param$estimate == 3)) {
-            par.param.estimate[d,m,3,dim.length_rec,1] <- param$estimate[3]
-            par.param.se[d,m,3,dim.length_rec,1] <- param$se[3]
+            estimate[d,m,3,dim.length_rec,1] <- param$estimate[3]
+            se[d,m,3,dim.length_rec,1] <- param$se[3]
           } # if
         } # if
 
@@ -470,12 +409,12 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
 
               if (length(na.omit(param.sample$estimate)) == length(param.sample$estimate)) {
 
-                par.param.estimate[d,m,1:2,j,rs] <- param.sample$estimate[1:2]
-                par.param.se[d,m,1:2,j,rs] <- param.sample$se[1:2]
+                estimate[d,m,1:2,j,rs] <- param.sample$estimate[1:2]
+                se[d,m,1:2,j,rs] <- param.sample$se[1:2]
 
                 if (length(param.sample$estimate ==3)) {
-                  par.param.estimate[d,m,3,j,rs] <- param.sample$estimate[3]
-                  par.param.se[d,m,3,j,rs] <- param.sample$se[3]
+                  estimate[d,m,3,j,rs] <- param.sample$estimate[3]
+                  se[d,m,3,j,rs] <- param.sample$se[3]
                 } # if
 
               } # if
@@ -487,20 +426,25 @@ if(mysystem=="Windows") registerDoSNOW(cl) # for starting the parallel calculati
         }  # if m < 4
       } # for m
     } # for d
-  } # else
-  out<-list(par.param.estimate,par.param.se,temp.random_indexes,temp.Q)
+  # } # else
+  out.temp <- list(estimate = estimate, se = se, random = temp.random_indexes)
 } # dopar
 # Write the output from all paralell calculations to the NetCDF file.
 # Maybe later this might be improved by letting each paralell loop write to the same NetCDF file.
-for(st in 1 : length(station.nb.vect)){
-          var.put.nc(nc, "param.estimate", data = out.temp[[st]][[1]], start=c(st, 1, 1, 1, 1, 1),
-                     count=c(1, dim.distr, dim.method, dim.param,dim.length_rec, dim.random_runs))
-          var.put.nc(nc, "param.se", data = out.temp[[st]][[2]], start=c(st, 1, 1, 1, 1, 1),
-                     count=c(1, dim.distr, dim.method, dim.param,dim.length_rec, dim.random_runs))
-          var.put.nc(nc, "random_indexes", data = out.temp[[st]][[3]], start=c(st, 1, 1, 1),
-                       count=c(1, dim.random_runs, length(sampling_years), dim.max_subsample))
-
-
+for(st in 1:length(meta_dat$station_number)){
+  # for(st in st_start:st_end){
+    if (all(dim(out.temp[st][[1]]$estimate) == c(dim.distr, dim.method, dim.param, dim.length_rec, dim.random_runs)) & is.numeric(out.temp[st][[1]]$estimate)) {
+      var.put.nc(nc, "param.estimate", data = out.temp[st][[1]]$estimate, start = c(st, 1, 1, 1, 1, 1),
+                 count = c(1, dim.distr, dim.method, dim.param, dim.length_rec, dim.random_runs))
+    }
+    if (all(dim(out.temp[st][[1]]$se) == c(dim.distr, dim.method, dim.param, dim.length_rec, dim.random_runs))  & is.numeric(out.temp[st][[1]]$se)) {
+          var.put.nc(nc, "param.se", data = out.temp[st][[1]]$se, start = c(st, 1, 1, 1, 1, 1),
+                     count = c(1, dim.distr, dim.method, dim.param, dim.length_rec, dim.random_runs))
+    }
+    if (all(dim(out.temp[st][[1]]$random) == c(dim.random_runs, length(sampling_years), dim.max_subsample))  & is.numeric(out.temp[st][[1]]$random)) {
+          var.put.nc(nc, "random_indexes", data = out.temp[st][[1]]$random, start = c(st, 1, 1, 1),
+                       count = c(1, dim.random_runs, length(sampling_years), dim.max_subsample))
+    }
 }
 rm(out.temp)
 stopCluster(cl) # stop the cluster
@@ -508,7 +452,7 @@ sink()  # Stop printing console onto file
 sync.nc(nc)
 close.nc(nc)
 
-}  # end of fillup_nc function
+}  # end of fillup_nc_parallel function
 
 # Names of stations that appear twice. This is not a problem, they are different stations
 # because they have a different number
@@ -520,3 +464,165 @@ close.nc(nc)
 # [1] "Stabburselv"
 # [1] "Helligskogen"
 # [1] "Lillefossen"
+
+
+
+
+#' fillup_nc
+#' @description Function to fill upthe NetCDF database
+#' @return
+#' @export
+#' @import fitdistrib
+#' @importFrom RNetCDF open.nc var.get.nc close.nc
+#' @examples
+fillup_nc <- function(dat = flood_data, meta_dat = flood_metadata, nc_path = "output/flood_database.nc") {
+
+  # st_start <- 1
+  # st_end <- 2
+
+  # library(RNetCDF)
+  # library(fitdistrib)
+
+
+  # To run if updating or creating the nc file from scratch  --------------
+
+  nc <- open.nc(nc_path, write = TRUE)  # Put FALSE for read-only  # CHECK DIR
+  Q <- var.get.nc(nc, "Q")
+
+  # Getting dimensional data from the empty database (TO TIDY UP)
+  distr.name <- var.get.nc(nc, "distr.name")
+  method.name <- var.get.nc(nc, "method.name")
+  dim.distr <- length(distr.name)
+  dim.method <- length(method.name)
+  dim.length_rec <- var.get.nc(nc, "dim.length_rec")
+
+  dim.param <- 3
+  dim.characters <- 64
+
+  dim.random_runs <- var.get.nc(nc, "dim.random_runs")
+  min_years_data <- var.get.nc(nc, "min_years_data")
+  sampling_years <- var.get.nc(nc, "sampling_years")
+  dim.max_subsample <- max(sampling_years)
+
+  # Dumping all console output into errorlog.txt
+  sink("output/errorlog.txt")  # CHECK DIR
+
+  for (st in seq(along = meta_dat$station_number)) {
+    # for (st in 1:3) {
+    print(meta_dat$station_number[st])
+    temp.Q <- as.vector(na.omit(Q[st, ]))
+
+    # We have already done this in convert_data.r.
+
+    # if (length(temp.Q) <  min_years_data) {
+    #   print("This station number has NULL or not enough data")
+    #   print(station.nb.vect[st])
+    #   next(st)
+    # } else {
+
+      # Computed random indexes before the for loops on distr and methods
+      temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), dim.max_subsample))
+      j <- 1
+      while (sampling_years[j] <= max(sampling_years)) {
+        # sampling_years[j] <= length(temp.Q) && ## This was in the while before which stops it to early for stations with short records
+        for (rs in 1:dim.random_runs) {  # sampling.int is by default without replacement
+          # now we sample with replacement. We could also sample with replacement for the full length of record
+          # for each station but this requires some playing with indices
+          temp.random_indexes[rs, j, 1:sampling_years[j]] <- sample.int(length(temp.Q), sampling_years[j], replace = TRUE)
+        }
+        if (j == length(sampling_years)) { break }
+        else { j <- j + 1 }
+      }
+      rm(j)  # To avoid potential clashes
+
+
+      for (d in 1:5) {
+        distr <- distr.name[d]
+        print(distr)
+        for (m in 1:3) {  # k  # no bayes
+          # m=4  # k
+          method <- method.name[m]
+          print(method)
+          print("Computing full dataset")
+
+          # Allocation the appropriate function for d and m
+          FUN <- match.fun(paste(as.character(distr), "_", as.character(method), collapse = "", sep = ""))
+          param <- FUN(temp.Q)
+
+          # Temporary variables to fill the NC database
+          temp.param.estimate <- array(NA,dim=c(dim.param))
+          temp.param.se <- array(NA,dim=c(dim.param))
+
+          # Calculate parameters for the full record
+          if (length(na.omit(param$estimate)) == length(param$estimate)) {
+
+            temp.param.estimate[1:2] <- param$estimate[1:2]
+            temp.param.se[1:2] <- param$se[1:2]
+
+            if (length(param$estimate == 3)) {
+              temp.param.estimate[3] <- param$estimate[3]
+              temp.param.se[3] <- param$se[3]
+            }
+          }
+          # WRITE TO NC on spot 30 of the length_rec dimension
+          # reminder: param.estimate[st, d, m, p, dim.length_rec, rs]
+          var.put.nc(nc, "param.estimate", data = temp.param.estimate, start=c(st, d, m, 1, dim.length_rec, 1), count=c(1, 1, 1, 3, 1, 1))
+          var.put.nc(nc, "param.se", data = temp.param.se, start=c(st, d, m, 1, dim.length_rec, 1), count=c(1, 1, 1, 3, 1, 1))
+
+          # Recreate temporary variables but with 2 extra dimensions for j and rs
+          temp.param.estimate <- array(NA,dim=c(dim.param, length(sampling_years), dim.random_runs))
+          temp.param.se <- array(NA,dim=c(dim.param, length(sampling_years), dim.random_runs))
+
+          # RANDOM START: Fill up with the random runs with sampled data
+          # j is the index from 1 to 23 and sampling_years[j] is 30, 35... 140
+          print("Computing sampled dataset")
+
+          if (m < 4) {  # Random sampling of Bayes takes a very long time  # k
+            j <- 1
+            while (sampling_years[j] <= max(sampling_years)) {
+              # sampling_years[j] <= length(temp.Q) && ## This was in the while before which stops it to early for stations with short records
+              for (rs in 1:dim.random_runs) {
+                # Reminder: temp.random_indexes <- array(NA, dim = c(dim.random_runs, length(sampling_years), max_subsample))
+                sample_q <- temp.Q[temp.random_indexes[rs, j, 1:sampling_years[j]]]
+                param.sample <- FUN(sample_q)
+
+                if (length(na.omit(param.sample$estimate)) == length(param.sample$estimate)) {
+
+                  temp.param.estimate[1:2, j, rs] <- param.sample$estimate[1:2]
+                  temp.param.se[1:2, j, rs] <- param.sample$se[1:2]
+
+                  if (length(param.sample$estimate ==3)) {
+                    temp.param.estimate[3, j, rs] <- param.sample$estimate[3]
+                    temp.param.se[3, j, rs] <- param.sample$se[3]
+                  }
+                }
+              }
+              if (j == length(sampling_years)) { break }
+              else { j <- j + 1 }
+            }
+            # }  # k
+
+            # WRITE TO NC
+            # reminder: param.estimate[st, d, m, p, dim.length_rec, rs]
+            var.put.nc(nc, "param.estimate", data = temp.param.estimate, start=c(st, d, m, 1, 1, 1),
+                       count=c(1, 1, 1, 3, length(sampling_years), dim.random_runs))
+            var.put.nc(nc, "param.se", data = temp.param.se, start=c(st, d, m, 1, 1, 1),
+                       count=c(1, 1, 1, 3, length(sampling_years), dim.random_runs))
+            # Remove temp variables from memory
+            rm(temp.param.estimate)
+            rm(temp.param.se)
+          }  # k
+        }
+      }
+      rm(temp.Q)
+      var.put.nc(nc, "random_indexes", data = temp.random_indexes, start=c(st, 1, 1, 1),
+                 count=c(1, dim.random_runs, length(sampling_years), dim.max_subsample))
+      rm(temp.random_indexes)
+    # } # end of else
+  }
+  sink()  # Stop printing console onto file
+  sync.nc(nc)
+  close.nc(nc)
+
+
+}
