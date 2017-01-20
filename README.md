@@ -7,6 +7,9 @@ Draft documentation website on [gh-pages](https://nve.github.io/FlomKart/)
 Flood frequency analysis for the FlomKart project. The output data of the repo is fed into the FlomKart_ShinyApp visualization tool.
 This is still work in progress!
 
+# Data
+Flood records and station metadata (catchment descriptors) can be found in the '/data' folder.
+
 # Methodology
 Only station with more than 30 years of data are used.
 We calculate fitted parameters for 5 distirbutions:
