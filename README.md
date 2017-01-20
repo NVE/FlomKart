@@ -8,7 +8,7 @@ Flood frequency analysis for the FlomKart project. The output data of the repo i
 This is still work in progress!
 
 # Data
-Flood records and station metadata (catchment descriptors) can be found in the '/data' folder.
+Flood records and station metadata (catchment descriptors) can be found in the `/data` folder.
 
 # Methodology
 Only station with more than 30 years of data are used.
