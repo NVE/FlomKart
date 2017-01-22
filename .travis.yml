@@ -1,0 +1,37 @@
+
+language: r
+cache: packages
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y netcdf-bin
+  - sudo apt-get install -y nco
+  - sudo apt-get install -y netcdf-doc
+  - sudo apt-get install -y libnetcdf-dev
+  - sudo apt-get install -y libnetcdf6
+  - sudo apt-get install -y libapparmor1
+  - sudo apt-get install -y libcurl4-openssl-dev
+  - sudo apt-get install -y udunits-bin
+  - sudo apt-get install -y libudunits2-dev
+
+r_packages:
+- RNetCDF
+- roxygen2
+
+r_github_packages:
+- NVE/fitdistrib
+- hafen/packagedocs
+
+env:
+  global:
+    - GITHUB_REPO: "NVE/FlomKart"
+    - GITHUB_PAT_FlomKart
+
+before_script:
+  - Rscript -e "devtools::document()"
+  - Rscript -e "devtools::install()"
+  - Rscript -e "packagedocs::build_vignettes()"
+  - chmod +x ./_deploy.sh
+
+script:
+  - ./_deploy.sh
