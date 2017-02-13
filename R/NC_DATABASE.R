@@ -74,6 +74,7 @@ dim.station <- length(meta_dat$regine_main)
 dim.distr <- 5
 dim.method <- 4
 dim.param <- 3
+dim.returnperids <- 12
 dim.length_total_record <- 150
 dim.random_runs <- 50
 dim.characters <- 64
@@ -82,7 +83,7 @@ dim.max_subsample <- max(sampling_years)
 dim.length_rec <- length(sampling_years) + 1   # The last index is for storing the full record.
 distr.name <- c("gumbel", "gamma", "gev", "gl", "pearson")
 method.name <- c("mle", "Lmom", "mom", "bayes")
-
+rperiods<-c(1.2,2,3,5,10,20,50,100,150,200,300,500) # used only for the Bayesian predictive distribution
 ## Create an empty NC file with the parameters defined above
 
 # Creation of the CDF dataset and definition of the dimensions
@@ -132,6 +133,7 @@ dim.def.nc(nc, "random_runs", dim.random_runs)
 dim.def.nc(nc, "max_string_length", dim.characters)
 dim.def.nc(nc, "subsampling", length(sampling_years))
 dim.def.nc(nc, "max_subsample", dim.max_subsample)
+dim.def.nc(nc, "r.period", dim.returnperiod)
 # dim.def.nc(nc, "scalars", 1)
 # sync.nc(nc)
 
@@ -244,6 +246,18 @@ att.put.nc(nc, "dim.length_rec", "missing_value", "NC_INT", -9999)
 att.put.nc(nc, "dim.length_rec", "long_name", "NC_CHAR", "The length of the dimension where subsampling results will be stored.")
 att.put.nc(nc, "dim.length_rec", "short_name", "NC_CHAR", "This is 30: 23 subsamples up to 140 years of data + margin + i=30 for the full record")
 var.put.nc(nc, "dim.length_rec", dim.length_rec)
+
+
+var.def.nc(gof_nc, varname = "r.periods", vartype = "NC_SHORT",
+           dimensions = "r.period")
+att.put.nc(gof_nc, "r.periods.qs", "missing_value", "NC_SHORT", -9999)
+att.put.nc(gof_nc, "r.periods.qs", "short_name", "NC_CHAR", "Design return periods")
+att.put.nc(gof_nc, "r.periods.qs", "long_name", "NC_CHAR",
+           "The following return periods were used: 2, 5, 10, 15, 20 and 30 years")
+var.put.nc(gof_nc, "r.periods.qs", rperiods)
+
+
+
 sync.nc(nc)
 
 # THEN VECTORS AND CO.
