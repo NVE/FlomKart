@@ -21,7 +21,8 @@ Imports: RNetCDF,
   parallel,
   foreach,
   doSNOW,
-  fBasics
+  fBasics,
+  glogis
 Remotes: NVE/fitdistrib
 Suggests: doMC,
           packagedocs
