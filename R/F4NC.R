@@ -123,10 +123,6 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   if (test.stat == TRUE && is.list(temp) == TRUE && is.numeric(temp$statistic) == TRUE && !is.infinite(temp$statistic) == TRUE) {
     KS <- temp$statistic
   }
-  else if (test.stat == TRUE && is.list(temp) == TRUE && is.numeric(temp$statistic) == TRUE && !is.infinite(temp$statistic) == TRUE && p.value == TRUE && is.list(temp) == TRUE){
-    KS <- temp$p.value
-    KS <- temp$statistic
-    }
   # We could add if (is.na(KS)) {print("Warning: gof_ks has failed with distr...)}
   invisible(KS)
 }
