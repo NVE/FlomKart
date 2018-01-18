@@ -61,7 +61,6 @@ gof_cs <- function(dat, param, distr = "distr") {
       p <- append(p, temp)
     }
   }
-
   if (any(is.na(p)) == FALSE && any(is.nan(p)) == FALSE && length(p) == nb.bins) {
     # A condition on sum(p) >0.99 could be added
   N <- length(dat)
@@ -120,7 +119,7 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   if (p.value == TRUE && is.list(temp) == TRUE) {
     KS <- temp$p.value
   }
-  if (test.stat == TRUE && is.list(temp) == TRUE && is.numeric(temp$statistic) == TRUE && !is.infinite(temp$statistic) == TRUE) {
+  else if (test.stat == TRUE && is.list(temp) == TRUE && is.numeric(temp$statistic) == TRUE && !is.infinite(temp$statistic) == TRUE) {
     KS <- temp$statistic
   }
   # We could add if (is.na(KS)) {print("Warning: gof_ks has failed with distr...)}
@@ -163,7 +162,7 @@ gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   }
 
   if (p.value == TRUE && is.list(temp) == TRUE) {
-    AD <- AD$p.value
+    AD <- temp$p.value
   } else if (test.stat == TRUE && is.list(temp) == TRUE && is.numeric(temp$statistic) == TRUE && !is.infinite(temp$statistic) == TRUE) {
     AD <- temp$statistic
   }
