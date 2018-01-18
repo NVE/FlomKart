@@ -13,7 +13,7 @@
 #' @param param
 #' @param distr
 #' @param method
-#'
+#' @importFrom plotrix addtable2plot
 #' @return
 #' @export
 #'
