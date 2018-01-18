@@ -8,7 +8,8 @@ Draft documentation website on [gh-pages](https://nve.github.io/FlomKart/)
 Install the package with the following code:
 
 ``` r
-library(devtools)install_github("NVE/FlomKart")```
+library(devtools)install_github("NVE/FlomKart")
+```
 
 # FlomKart
 Flood frequency analysis for the FlomKart project. The output data of the repo is fed into the FlomKart_ShinyApp visualization tool.
