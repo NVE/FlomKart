@@ -163,7 +163,7 @@ gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   }
 
   if (p.value == TRUE && is.list(temp) == TRUE) {
-    AD <- AD$p.value
+    AD <- temp$p.value
   } else if (test.stat == TRUE && is.list(temp) == TRUE && is.numeric(temp$statistic) == TRUE && !is.infinite(temp$statistic) == TRUE) {
     AD <- temp$statistic
   }
