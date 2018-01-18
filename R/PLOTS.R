@@ -21,32 +21,7 @@
 plot_all  <- function(dat, GOF.list, param, distr = "distr", method = "method") {
 
 
-  windows()
-  par(mfrow = c(2, 2))
-  plot_density(dat, GOF.list, param, as.character(distr))
-  plot_rlevel(dat, param, as.character(distr))
-
-  # Add a table with the goodness of fit estimations
-  nbs <- matrix(round(c(GOF.list$CS, GOF.list$KS, GOF.list$AD), 2), ncol = 3)
-  rownames(nbs) <- c("Goodness of fit")
-  colnames(nbs) <- c("CS", "KS", "AD")
-  addtable2plot(0, 0, nbs, bty = "o", bg = "lightgray", display.rownames = TRUE, xpad = 0, ypad = 0)
-
-  # Add a table with the fitting results
-  if(distr == 'gumbel' | distr == 'gamma')  {
-    nbs <- matrix(round(c(param$estimate[1], param$estimate[2], param$se[1], param$se[2]), 2), ncol = 2)
-    rownames(nbs) <- c("Location", "Scale")
-  } else {
-    nbs <- matrix(round(c(param$estimate[1], param$estimate[2], param$estimate[3], param$se[1], param$se[2], param$se[3]), 2), ncol = 2)
-    rownames(nbs) <- c("Location", "Scale", "Shape")
-  }
-  colnames(nbs) <- c("Estimate", "Std Err")
-  xmax <- max(dat)
-  addtable2plot(0, xmax, nbs, bty = "o", bg = "lightgray", display.rownames = TRUE, xpad = 0, ypad = 0) #150,570
-
-  plot_ecdf(dat, param, as.character(distr))
-  text(0, 1, paste("Distrib=", as.character(distr), "/ Method=", as.character(method)), cex = 1.2, adj = 0)
-  plot_qq(dat, param, as.character(distr))
+return your_function_needs_fixing
 }
 
 
