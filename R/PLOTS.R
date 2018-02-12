@@ -36,7 +36,10 @@ plot_all  <- function(dat, GOF.list, param, distr = "distr", method = "method") 
   if(distr == 'gumbel' | distr == 'gamma')  {
     nbs <- matrix(round(c(param$estimate[1], param$estimate[2], param$se[1], param$se[2]), 2), ncol = 2)
     rownames(nbs) <- c("Location", "Scale")
-  } else {
+  } else if(distr == 'exp')  {
+    nbs <- matrix(round(c(param$estimate[1], param$estimate[2], param$se[1], param$se[2]), 2), ncol = 2)
+    rownames(nbs) <- c("Location", "Scale")
+  }   else {
     nbs <- matrix(round(c(param$estimate[1], param$estimate[2], param$estimate[3], param$se[1], param$se[2], param$se[3]), 2), ncol = 2)
     rownames(nbs) <- c("Location", "Scale", "Shape")
   }
@@ -81,10 +84,12 @@ plot_density  <- function(dat, GOF.list, param, distr = "distr") {
   par(new = TRUE)
 
   # Distribution specific y vector
+  if(distr == 'exp')   y <- f.exp(x, param$estimate[1], param$estimate[2])
   if(distr == 'gumbel')   y <- dgumbel(x, param$estimate[1], param$estimate[2])
   if(distr == 'gamma')    y <- dgamma(x, param$estimate[1], param$estimate[2])
   if(distr == 'gev')      y <- evd::dgev(x, param$estimate[1], param$estimate[2], param$estimate[3])  # I should have done that for most functions coming from packages...
   if(distr == 'gl')       y <- f.genlogis(x, param$estimate[1], param$estimate[2], param$estimate[3])
+  if(distr == 'gp')       y <- f.genpar(x, param$estimate[1], param$estimate[2], param$estimate[3])
   if(distr == 'pearson')  y <- f.gamma(x, param$estimate[1], param$estimate[2], param$estimate[3])
 
   plot(x, y, xlim = c(0, xmax), ylim = c(0, ymax), type = "l", lwd = 2, col = "black", xlab = "", ylab = "")
@@ -116,6 +121,11 @@ plot_rlevel <- function(dat, param, distr = "distr") {
   empq <- sort(dat)
 
   # The x vector is distribution specific
+  if(distr == 'exp') {
+    x <- 1 / (1 - F.exp(y, param$estimate[1], param$estimate[2]))
+    # empT <- 1/(1-(seq(1:length(empq))-0.44)/(length(empq))+0.12) # Gringorten, optimized for the gumbel distribution
+    empT <- 1/(1 - (seq(1:length(empq)) - 0.50) / (length(empq)))   # Hazen, a traditional choice
+  }
   if(distr == 'gumbel') {
     x <- 1 / (1 - pgumbel(y, param$estimate[1], param$estimate[2]))
     # empT <- 1/(1-(seq(1:length(empq))-0.44)/(length(empq))+0.12) # Gringorten, optimized for the gumbel distribution
@@ -133,6 +143,10 @@ plot_rlevel <- function(dat, param, distr = "distr") {
   if(distr == 'gl')   {
     x <- 1 / (1 - F.genlogis(y, param$estimate[1], param$estimate[2], param$estimate[3]))
     # empT <- 1/(1-(seq(1:length(empq))-0.35)/(length(empq)))  # APL
+    empT <- 1/(1 - (seq(1:length(empq)) - 0.50) / (length(empq)))   # Hazen, a traditional choice
+  }
+  if(distr=='gp') {
+    x <- 1/(1-F.genpar(y, param$estimate[1], param$estimate[2], param$estimate[3]))
     empT <- 1/(1 - (seq(1:length(empq)) - 0.50) / (length(empq)))   # Hazen, a traditional choice
   }
   if(distr=='pearson') {
@@ -169,10 +183,12 @@ plot_ecdf  <- function(dat, param, distr = "distr") {
   x <- seq(0, xmax, xmax / 100)
 
   # Distribution specific y vector
+  if(distr == 'exp')    y <- F.exp(x, param$estimate[1], param$estimate[2])
   if(distr == 'gumbel') y <- pgumbel(x, param$estimate[1], param$estimate[2])
   if(distr == 'gamma')  y <- pgamma(x, param$estimate[1], param$estimate[2])
   if(distr == 'gev')    y <- evd::pgev(x, param$estimate[1], param$estimate[2], param$estimate[3])
   if(distr == 'gl')     y <- F.genlogis(x, param$estimate[1], param$estimate[2], param$estimate[3])
+  if(distr == 'gp')     y <- F.genpar(x, param$estimate[1], param$estimate[2], param$estimate[3])
   if(distr == 'pearson') y <- F.gamma(x, param$estimate[1], param$estimate[2], param$estimate[3])
 
 
@@ -202,6 +218,7 @@ plot_qq  <- function(dat, param, distr = "distr") {
   y <- sort(dat)
 
   if(distr == 'gamma')  x <- sort(rgamma(p.values, param$estimate[1], param$estimate[2]))
+  if(distr == 'exp')  x <- sort(rand.exp(p.values, param$estimate[1], param$estimate[2]))
   if(distr == 'gumbel') {
     # pvalues <- (seq(1:length(dat))-0.44)/(length(dat)+0.12) # Gringorten, optimized for the gumbel distribution
     x <- sort(rgumbel(p.values, param$estimate[1], param$estimate[2]))
@@ -211,6 +228,7 @@ plot_qq  <- function(dat, param, distr = "distr") {
     x <- sort(evd::rgev(p.values, param$estimate[1], param$estimate[2], param$estimate[3]))
   }
   if(distr == 'gl')     x <- invF.genlogis(p.values, param$estimate[1], param$estimate[2], param$estimate[3])
+  if(distr == 'gp')     x <- invF.genpar(p.values, param$estimate[1], param$estimate[2], param$estimate[3])
   if(distr == 'pearson') x <- sort(rand.gamma(p.values, param$estimate[1], param$estimate[2], param$estimate[3]))
 
   plot(x, y, ylab = "Empirical flood dischare (m3/s)", xlab = "Modelled flood dischare (m3/s)",
