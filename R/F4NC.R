@@ -102,7 +102,9 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   if (distr == 'gumbel') {
     temp <- fail_safe(dat, "pgumbel", param[1], param[2])
   }
-
+  if (distr == 'exp') {
+    temp <- fail_safe(dat, "F.exp", param[1], param[2])
+  }
   if (distr == 'gamma') {
     temp <- fail_safe(dat, "pgamma", param[1], rate = param[2])
   }
@@ -111,6 +113,9 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   }
   if (distr == 'gl') {
     temp <- fail_safe(dat, "F.genlogis", param[1], param[2], param[3])
+  }
+  if (distr == 'gp') {
+    temp <- fail_safe(dat, "F.genpar", param[1], param[2], param[3])
   }
   if (distr == 'pearson') {
     temp <- fail_safe(dat, "F.gamma", param[1], param[2], param[3])
@@ -147,7 +152,10 @@ gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   if (distr == 'gumbel') {
     temp <- fail_safe(dat, "pgumbel", param[1], param[2])
   }
-
+  if (distr == 'exp') {
+    dat <- dat[dat > param[1]]
+    temp <- fail_safe(dat, "F.exp", param[1], param[2])
+  }
   if (distr == 'gamma') {
     temp <- fail_safe(dat, "pgamma", param[1], rate = param[2])
   }
@@ -157,6 +165,10 @@ gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
   if (distr == 'gl') {
     temp <- fail_safe(dat, "F.genlogis", param[1], param[2], param[3])
   }
+  if (distr == 'gp') {
+    dat <- dat[dat > param[1]]
+    temp <- fail_safe(dat, "F.genpar", param[1], param[2], param[3])
+  } 
   if (distr == 'pearson') {
     temp <- fail_safe(dat, "F.gamma", param[1], param[2], param[3])
   }
