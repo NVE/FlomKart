@@ -228,7 +228,10 @@ BS4NC <- function(dat, threshold, param, distr = "distr") {
 
 #   m <- max(dat.full) * 0.8
 #   threshold <- seq(m / 6, m, m / 6)
-
+  
+  if(distr == 'exp') {
+    modelled.prob <- F.exp(threshold, param[1], param[2])
+  }
   if(distr == 'gumbel') {
     modelled.prob <- pgumbel(threshold, param[1], param[2])  # Could be protected with "failwith"
   }
@@ -243,6 +246,9 @@ BS4NC <- function(dat, threshold, param, distr = "distr") {
   }
   if(distr == 'pearson') {
     modelled.prob <- F.gamma(threshold, param[1], param[2], param[3])
+  }
+  if(distr == 'gp') {
+    modelled.prob <- F.genpar(threshold, param[1], param[2], param[3])
   }
 
   for (z in 1:6) {
