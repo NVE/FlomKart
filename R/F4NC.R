@@ -6,7 +6,7 @@
 #' @param dat
 #' @param param
 #' @param distr
-#' @importFrom dplyr failwith
+#' @importFrom purrr possibly
 #' @return
 #' @export
 #' @import nsRFA
@@ -28,35 +28,35 @@ gof_cs <- function(dat, param, distr = "distr") {
   # This depends on the distribution
   if (distr == 'gumbel') {
     for (i in 1:nb.bins) {
-      fail_safe <- failwith(NA, evd::pgumbel)
+      fail_safe <- possibly(evd::pgumbel, NA)
       temp <- fail_safe(dat.breaks[i+1], param[1], param[2]) - fail_safe(dat.breaks[i], param[1], param[2])
       p <- append(p, temp)
     }
   }
   if (distr == 'gamma') {
     for (i in 1:nb.bins) {
-      fail_safe <- failwith(NA, pgamma)
+      fail_safe <- possibly(pgamma, NA)
       temp <- fail_safe(dat.breaks[i+1], param[1], rate = param[2]) - fail_safe(dat.breaks[i], param[1], rate = param[2])
       p <- append(p, temp)
     }
   }
   if (distr == 'gev') {
     for (i in 1:nb.bins) {
-      fail_safe <- failwith(NA, evd::pgev)  # evd::pgev  # also tried nsRFA::F.GEV
+      fail_safe <- possibly(evd::pgev, NA)  # evd::pgev  # also tried nsRFA::F.GEV
       temp <- fail_safe(dat.breaks[i+1], param[1], param[2], param[3]) - fail_safe(dat.breaks[i], param[1], param[2], param[3])
       p <- append(p, temp)
     }
   }
   if (distr == 'gl') {
     for (i in 1:nb.bins) {
-      fail_safe <- failwith(NA, nsRFA::F.genlogis)
+      fail_safe <- possibly(nsRFA::F.genlogis, NA)
       temp <- fail_safe(dat.breaks[i+1], param[1], param[2], param[3]) - fail_safe(dat.breaks[i], param[1], param[2], param[3])
       p <- append(p, temp)
     }
   }
   if (distr == 'pearson') {
     for (i in 1:nb.bins) {
-      fail_safe <- failwith(NA, nsRFA::F.gamma)
+      fail_safe <- possibly(nsRFA::F.gamma, NA)
       temp <- fail_safe(dat.breaks[i+1], param[1], param[2], param[3]) - fail_safe(dat.breaks[i], param[1], param[2], param[3])
       p <- append(p, temp)
     }
@@ -97,7 +97,7 @@ gof_cs <- function(dat, param, distr = "distr") {
 gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FALSE) {
 
   KS <- NA
-  fail_safe <- failwith(NA, stats::ks.test)
+  fail_safe <- possibly(stats::ks.test, NA)
 
   if (distr == 'gumbel') {
     temp <- fail_safe(dat, "pgumbel", param[1], param[2])
@@ -147,7 +147,7 @@ gof_ks <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FAL
 gof_ad <- function(dat, param, distr = "distr", test.stat = TRUE , p.value = FALSE) {
 
   AD <- NA
-  fail_safe <- failwith(NA, goftest::ad.test)
+  fail_safe <- possibly(goftest::ad.test, NA)
 
   if (distr == 'gumbel') {
     temp <- fail_safe(dat, "pgumbel", param[1], param[2])
@@ -356,30 +356,30 @@ RLEVELS4NC <- function(param.estimate, return.periods, distr = "distr") {
   r.levels <- array(NA, dim = length(return.periods))
   fail_vector <- array(NA, dim = length(return.periods))
   if(distr == 'gumbel') {
-    fail_safe <- failwith(fail_vector, invF.gumb)
+    fail_safe <- possibly(invF.gumb, fail_vector)
     r.levels <- fail_safe(F = (1 - 1 / return.periods), param.estimate[ 1], param.estimate[2])
     if (is.na(r.levels[1]) == TRUE) { print("Warning: the function invF.gumb failed in RLEVELS4NC") }
   }
   if(distr == 'gamma') {
-    fail_safe <- failwith(fail_vector, qgamma)
+    fail_safe <- possibly(qgamma, fail_vector)
     r.levels <- fail_safe(p = (1 - 1 / return.periods), shape = param.estimate[1], scale = 1 / param.estimate[2])
     # qgamma comes from Rlab package? Be careful!!!!!!!!
     if (is.na(r.levels[1]) == TRUE) { print("Warning: the function qgamma failed in RLEVELS4NC") }
   }
   if(distr == 'gev') {
-    fail_safe <- failwith(fail_vector, evd::qgev)
+    fail_safe <- possibly(evd::qgev, fail_vector)
     r.levels <- fail_safe( (1 - 1 / return.periods),
                           param.estimate[1], param.estimate[2], param.estimate[3])
     if (is.na(r.levels[1]) == TRUE) { print("Warning: the function evd::qgev failed in RLEVELS4NC") }
   }
   if(distr == 'gl') {
-    fail_safe <- failwith(fail_vector, nsRFA::invF.genlogis)
+    fail_safe <- possibly(nsRFA::invF.genlogis, fail_vector)
     r.levels <- fail_safe(F = (1 - 1 / return.periods),
                           param.estimate[1], param.estimate[2], param.estimate[3])
     if (is.na(r.levels[1]) == TRUE) { print("Warning: the function invF.genlogis failed in RLEVELS4NC") }
   }
   if(distr == 'pearson') {
-    fail_safe <- failwith(fail_vector, nsRFA::invF.gamma)
+    fail_safe <- possibly(nsRFA::invF.gamma, fail_vector)
     r.levels <- fail_safe(F = (1 - 1 / return.periods),
                           param.estimate[1], param.estimate[2], param.estimate[3])
     if (is.na(r.levels[1]) == TRUE) { print("Warning: the function invF.gamma failed in RLEVELS4NC") }
@@ -502,18 +502,18 @@ run_all_ff <- function(dat,station.nb.vect, distr = "distr", method = "method") 
       if ( distr == "gamma") {
         # GAMMA -> Paste the function call and assign it to a temporary function FUN
         FUN <- match.fun(paste("gamma_", as.character(method), collapse = "", sep = ""))
-        fail_safe <- failwith(NULL, FUN)
+        fail_safe <- possibly(FUN, NULL)
         param.1 <- fail_safe(sample.1)
         param.2 <- fail_safe(sample.2)
         sample.1.max <- max(sample.1)
         sample.2.max <- max(sample.2)
 
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, pgamma)
+          fail_safe <- possibly(pgamma, NA)
           ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[1], rate = param.1$estimate[2])^length(sample.2)
         }
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, pgamma)
+          fail_safe <- possibly(pgamma, NA)
           ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[1], rate = param.2$estimate[2])^length(sample.1)
         }
       }
@@ -521,18 +521,18 @@ run_all_ff <- function(dat,station.nb.vect, distr = "distr", method = "method") 
       if ( distr == "gumbel") {
         # GUMBEL -> Paste the function call and assign it to a temporary function FUN
         FUN <- match.fun(paste("gumbel_", as.character(method), collapse = "", sep = ""))
-        fail_safe <- failwith(NULL, FUN)
+        fail_safe <- possibly(FUN, NULL)
         param.1 <- fail_safe(sample.1)
         param.2 <- fail_safe(sample.2)
         sample.1.max <- max(sample.1)
         sample.2.max <- max(sample.2)
 
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, pgumbel)
+          fail_safe <- possibly(pgumbel, NA)
           ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[1], param.1$estimate[2])^length(sample.2)
         }
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, pgumbel)
+          fail_safe <- possibly(pgumbel, NA)
           ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[1], param.2$estimate[2])^length(sample.1)
         }
       }
@@ -540,18 +540,18 @@ run_all_ff <- function(dat,station.nb.vect, distr = "distr", method = "method") 
       if ( distr == "gev") {
         # GEV -> Paste the function call and assign it to a temporary function FUN
         FUN <- match.fun(paste("gev_", as.character(method), collapse = "", sep = ""))
-        fail_safe <- failwith(NULL, FUN)
+        fail_safe <- possibly(FUN, NULL)
         param.1 <- fail_safe(sample.1)
         param.2 <- fail_safe(sample.2)
         sample.1.max <- max(sample.1)
         sample.2.max <- max(sample.2)
 
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, pgev)
+          fail_safe <- possibly(pgev, NA)
           ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[3], param.1$estimate[1], param.1$estimate[2])^length(sample.2)
         }
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, pgev)
+          fail_safe <- possibly(pgev, NA)
           ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[3], param.2$estimate[1], param.2$estimate[2])^length(sample.1)
         }
       }
@@ -559,18 +559,18 @@ run_all_ff <- function(dat,station.nb.vect, distr = "distr", method = "method") 
       if ( distr == "gl") {
         # GL -> Paste the function call and assign it to a temporary function FUN
         FUN <- match.fun(paste("gl_", as.character(method), collapse = "", sep = ""))
-        fail_safe <- failwith(NULL, FUN)
+        fail_safe <- possibly(FUN, NULL)
         param.1 <- fail_safe(sample.1)
         param.2 <- fail_safe(sample.2)
         sample.1.max <- max(sample.1)
         sample.2.max <- max(sample.2)
 
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, F.genlogis)
+          fail_safe <- possibly(F.genlogis, NA)
           ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[1], param.1$estimate[2], param.1$estimate[3])^length(sample.2)
         }
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, F.genlogis)
+          fail_safe <- possibly(F.genlogis, NA)
           ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[1], param.2$estimate[2], param.2$estimate[3])^length(sample.1)
         }
       }
@@ -578,18 +578,18 @@ run_all_ff <- function(dat,station.nb.vect, distr = "distr", method = "method") 
       if ( distr == "pearson") {
         # PEARSON -> Paste the function call and assign it to a temporary function FUN
         FUN <- match.fun(paste("pearson_", as.character(method), collapse = "", sep = ""))
-        fail_safe <- failwith(NULL, FUN)
+        fail_safe <- possibly(FUN, NULL)
         param.1 <- fail_safe(sample.1)
         param.2 <- fail_safe(sample.2)
         sample.1.max <- max(sample.1)
         sample.2.max <- max(sample.2)
 
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, F.gamma)
+          fail_safe <- possibly(F.gamma, NA)
           ff.1[i] <- fail_safe(sample.2.max, param.1$estimate[1], param.1$estimate[2], param.1$estimate[3])^length(sample.2)
         }
         if (is.null(param.1) == FALSE) {
-          fail_safe <- failwith(NA, F.gamma)
+          fail_safe <- possibly(F.gamma, NA)
           ff.2[i] <- fail_safe(sample.1.max, param.2$estimate[1], param.2$estimate[2], param.2$estimate[3])^length(sample.1)
         }
       }
